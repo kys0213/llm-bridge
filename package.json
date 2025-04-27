@@ -1,0 +1,19 @@
+{
+  "name": "llm-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r clean"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
+  }
+}
