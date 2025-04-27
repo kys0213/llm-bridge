@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 
 describe('LlmBridgeLoader', () => {
   it('should load the manifest', async () => {
-    const { manifest, ctor } = await LlmBridgeLoader.load('@agentos/llama3-llm-bridge');
+    const { manifest, ctor, configSchema} = await LlmBridgeLoader.load('@llm-bridge/llama3-with-ollama');
     expect(manifest).toBeDefined();
 
     const bridge = new ctor();
