@@ -1,6 +1,6 @@
-# LLM Bridge Spec
+# @llm-bridge/llm-bridge-spec
 
-LLM 모델을 표준화된 방식으로 연결하고 실행하기 위한 명세입니다.
+LLM 서비스의 스펙과 타입을 정의하는 패키지입니다.
 
 ## 🧭 1. 철학 (Philosophy)
 
@@ -129,14 +129,11 @@ export interface LlmManifest {
 ## 📦 설치 및 사용
 
 ```bash
-# 패키지 설치
-npm install @agentos/llm-bridge-spec
-
-# 또는 yarn
-yarn add @agentos/llm-bridge-spec
-
-# 또는 pnpm
-pnpm add @agentos/llm-bridge-spec
+npm install @llm-bridge/llm-bridge-spec
+# or
+yarn add @llm-bridge/llm-bridge-spec
+# or
+pnpm add @llm-bridge/llm-bridge-spec
 ```
 
 ## 🤝 기여하기
@@ -150,3 +147,87 @@ pnpm add @agentos/llm-bridge-spec
 ## 📄 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 있습니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+
+## 사용법
+
+```typescript
+import { LLMConfig, LLMResponse, Message, Content } from '@llm-bridge/llm-bridge-spec';
+
+// LLM 설정
+const config: LLMConfig = {
+  model: 'gpt-3.5-turbo',
+  apiKey: 'your-api-key',
+  temperature: 0.7
+};
+
+// 메시지 생성
+const message: Message = {
+  role: 'user',
+  content: {
+    contentType: 'text',
+    value: 'Hello, world!'
+  } as Content
+};
+
+// LLM 응답 타입
+const response: LLMResponse = {
+  text: 'Hello, world!',
+  usage: {
+    promptTokens: 5,
+    completionTokens: 5,
+    totalTokens: 10
+  }
+};
+```
+
+## API
+
+### `LLMConfig`
+
+LLM 서비스의 설정을 정의하는 인터페이스입니다.
+
+```typescript
+interface LLMConfig {
+  model: string;
+  apiKey: string;
+  temperature?: number;
+  maxTokens?: number;
+}
+```
+
+### `LLMResponse`
+
+LLM 서비스의 응답을 정의하는 인터페이스입니다.
+
+```typescript
+interface LLMResponse {
+  text: string;
+  usage: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+}
+```
+
+### `Message`
+
+LLM 서비스와의 대화 메시지를 정의하는 인터페이스입니다.
+
+```typescript
+interface Message {
+  role: 'user' | 'assistant' | 'system';
+  content: Content;
+}
+```
+
+### `Content`
+
+메시지의 내용을 정의하는 인터페이스입니다.
+
+```typescript
+interface Content {
+  contentType: string;
+  value: string;
+}
+```
