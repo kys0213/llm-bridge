@@ -35,7 +35,7 @@ importers:
 
   packages/llama3-llm-bridge:
     dependencies:
-      '@llm-bridge/llm-bridge-spec':
+      llm-bridge-spec:
         specifier: workspace:*
         version: link:../llm-bridge-spec
       ollama:
@@ -69,12 +69,12 @@ importers:
 
   packages/llm-bridge-loader:
     dependencies:
-      '@llm-bridge/llm-bridge-spec':
-        specifier: workspace:*
-        version: link:../llm-bridge-spec
       json-schema-to-zod:
         specifier: ^2.6.1
         version: 2.6.1
+      llm-bridge-spec:
+        specifier: workspace:*
+        version: link:../llm-bridge-spec
       openai:
         specifier: ^4.28.0
         version: 4.96.0(zod@3.24.3)
@@ -82,15 +82,15 @@ importers:
         specifier: ^3.24.3
         version: 3.24.3
     devDependencies:
-      '@llm-bridge/llama3-with-ollama':
-        specifier: workspace:*
-        version: link:../llama3-llm-bridge
       '@types/node':
         specifier: ^20.11.24
         version: 20.17.31
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
+      llama3-with-ollama-llm-bridge:
+        specifier: workspace:*
+        version: link:../llama3-llm-bridge
       rimraf:
         specifier: ^5.0.5
         version: 5.0.10
