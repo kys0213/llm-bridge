@@ -1,5 +1,5 @@
 {
-  "name": "@llm-bridge/llama3-with-ollama",
+  "name": "llama3-with-ollama-llm-bridge",
   "version": "1.0.0",
   "description": "Llama3 LLM Bridge with Ollama",
   "main": "./dist/index.js",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "ollama": "^0.4.9",
-    "@llm-bridge/llm-bridge-spec": "workspace:*"
+    "llm-bridge-spec": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
