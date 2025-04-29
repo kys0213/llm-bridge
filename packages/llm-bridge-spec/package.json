@@ -1,5 +1,5 @@
 {
-  "name": "@llm-bridge/llm-bridge-spec",
+  "name": "llm-bridge-spec",
   "version": "1.0.0",
   "private": false,
   "type": "module",

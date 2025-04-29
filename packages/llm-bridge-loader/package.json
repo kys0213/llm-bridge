@@ -1,5 +1,5 @@
 {
-  "name": "@llm-bridge/llm-bridge-loader",
+  "name": "llm-bridge-loader",
   "version": "1.0.0",
   "private": false,
   "type": "module",
