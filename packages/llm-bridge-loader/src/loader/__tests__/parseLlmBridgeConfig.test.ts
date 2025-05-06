@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseLlmBridgeConfig } from '../parseLlmBridgeConfig';
-import { LlmManifest } from '@agentos/llm-bridge-spec';
+import { LlmManifest } from 'llm-bridge-spec';
 
 describe('parseLlmBridgeConfig', () => {
   it('should parse valid config according to schema', () => {

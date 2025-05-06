@@ -6,8 +6,9 @@ import {
   LlmMetadata,
   ChatMessage,
   StringContent,
-} from '@agentos/llm-bridge-spec';
-import { Ollama, Message, ChatResponse } from 'ollama';
+  ToolCall as BridgeToolCall,
+} from 'llm-bridge-spec';
+import { Ollama, Message, ChatResponse, Tool, ToolCall } from 'ollama';
 
 export class OllamaLlama3Bridge implements LlmBridge {
   private client: Ollama;
@@ -19,18 +20,14 @@ export class OllamaLlama3Bridge implements LlmBridge {
   }
 
   async invoke(prompt: LlmBridgePrompt, option?: InvokeOption): Promise<LlmBridgeResponse> {
-    const messages: Message[] = prompt.messages.map((msg: ChatMessage) => ({
-      role: msg.role,
-      content: msg.content.contentType === 'text' ? msg.content.value : '',
-      images:
-        msg.content.contentType === 'image' && Buffer.isBuffer(msg.content.value)
-          ? [msg.content.value]
-          : undefined,
-    }));
+    const messages: Message[] = this.toMessages(prompt);
 
-    const response = await this.client.chat({
+    const tools = this.toTools(option);
+
+    const ollamaResponse = await this.client.chat({
       model: this.model,
       messages: messages,
+      tools: tools,
       options: {
         temperature: option?.temperature ?? 0.7,
         top_p: option?.topP ?? 0.9,
@@ -40,37 +37,20 @@ export class OllamaLlama3Bridge implements LlmBridge {
       },
     });
 
-    const content: StringContent = {
-      contentType: 'text',
-      value: response.message.content,
-    };
-
-    return {
-      content,
-      usage: {
-        promptTokens: 0, // Ollama API에서 제공하지 않음
-        completionTokens: 0,
-        totalTokens: 0,
-      },
-    };
+    return this.toLlmBridgeResponse(ollamaResponse);
   }
 
   async *invokeStream(
     prompt: LlmBridgePrompt,
     option?: InvokeOption
   ): AsyncIterable<LlmBridgeResponse> {
-    const messages: Message[] = prompt.messages.map((msg: ChatMessage) => ({
-      role: msg.role,
-      content: msg.content.contentType === 'text' ? msg.content.value : '',
-      images:
-        msg.content.contentType === 'image' && Buffer.isBuffer(msg.content.value)
-          ? [msg.content.value]
-          : undefined,
-    }));
+    const messages: Message[] = this.toMessages(prompt);
+    const tools: Tool[] = this.toTools(option);
 
     for await (const chunk of await this.client.chat({
       model: this.model,
       messages: messages,
+      tools: tools,
       stream: true,
       options: {
         temperature: option?.temperature ?? 0.7,
@@ -101,13 +81,52 @@ export class OllamaLlama3Bridge implements LlmBridge {
       value: response.message.content,
     };
 
+    const toolCalls: BridgeToolCall[] = response.message.tool_calls
+      ? response.message.tool_calls.map(toolCall => this.toBridgeToolCall(toolCall))
+      : [];
+
     return {
       content,
+      toolCalls,
       usage: {
         promptTokens: 0, // Ollama API에서 제공하지 않음
         completionTokens: 0,
         totalTokens: 0,
       },
     };
+  }
+
+  private toBridgeToolCall(toolCall: ToolCall): BridgeToolCall {
+    return {
+      toolCallId: 'unknown',
+      name: toolCall.function.name,
+      arguments: toolCall.function.arguments as Record<string, unknown>,
+    };
+  }
+
+  private toMessages(prompt: LlmBridgePrompt): Message[] {
+    return prompt.messages.map((msg: ChatMessage) => ({
+      role: msg.role,
+      content: msg.content.contentType === 'text' ? msg.content.value : '',
+      images:
+        msg.content.contentType === 'image' && Buffer.isBuffer(msg.content.value)
+          ? [msg.content.value]
+          : undefined,
+    }));
+  }
+
+  private toTools(option: InvokeOption | undefined): Tool[] {
+    if (!option?.tools) {
+      return [];
+    }
+
+    return option.tools.map(tool => ({
+      type: 'function',
+      function: {
+        name: tool.name,
+        description: tool.description,
+        parameters: tool.parameters,
+      },
+    }));
   }
 }

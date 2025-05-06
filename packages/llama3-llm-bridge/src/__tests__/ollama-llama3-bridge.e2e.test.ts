@@ -1,5 +1,5 @@
 import { describe, beforeAll, it, expect } from 'vitest';
-import { LlmBridgePrompt, InvokeOption, StringContent } from '@agentos/llm-bridge-spec';
+import { LlmBridgePrompt, InvokeOption, StringContent } from 'llm-bridge-spec';
 import { OllamaLlama3Bridge } from '../bridge/ollama-llama3-bridge';
 
 describe('OllamaLlama3Bridge E2E Tests', () => {

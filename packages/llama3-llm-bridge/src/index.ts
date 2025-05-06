@@ -1,4 +1,4 @@
-import { LlmManifest } from '@agentos/llm-bridge-spec';
+import { LlmManifest } from 'llm-bridge-spec';
 import { OllamaLlama3Bridge } from './bridge/ollama-llama3-bridge';
 import { OLLAMA_LLAMA3_MANIFEST } from './bridge/ollama-llama3-manifest';
 

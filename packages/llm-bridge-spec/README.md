@@ -157,7 +157,7 @@ import { LLMConfig, LLMResponse, Message, Content } from '@llm-bridge/llm-bridge
 const config: LLMConfig = {
   model: 'gpt-3.5-turbo',
   apiKey: 'your-api-key',
-  temperature: 0.7
+  temperature: 0.7,
 };
 
 // 메시지 생성
@@ -165,8 +165,8 @@ const message: Message = {
   role: 'user',
   content: {
     contentType: 'text',
-    value: 'Hello, world!'
-  } as Content
+    value: 'Hello, world!',
+  } as Content,
 };
 
 // LLM 응답 타입
@@ -175,8 +175,8 @@ const response: LLMResponse = {
   usage: {
     promptTokens: 5,
     completionTokens: 5,
-    totalTokens: 10
-  }
+    totalTokens: 10,
+  },
 };
 ```
 

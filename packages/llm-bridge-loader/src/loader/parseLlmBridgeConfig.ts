@@ -1,4 +1,4 @@
-import { LlmManifest, JSONSchema, JSONObjectSchema } from '@agentos/llm-bridge-spec';
+import { LlmManifest, JSONSchema, JSONObjectSchema } from 'llm-bridge-spec';
 import { z } from 'zod';
 
 /**
@@ -6,13 +6,13 @@ import { z } from 'zod';
  * @param manifest LLM 매니페스트
  * @returns 설정을 검증하는 함수
  */
-export function parseLlmBridgeConfig(manifest: LlmManifest): z.ZodTypeAny {
+export function parseLlmBridgeConfig(manifest: LlmManifest): z.AnyZodObject {
   const jsonSchema = manifest.configSchema;
 
   assertObjectSchema(jsonSchema);
 
   if (!jsonSchema.properties) {
-    return z.record(z.any());
+    return z.object({});
   }
 
   const shape: Record<string, z.ZodTypeAny> = {};
