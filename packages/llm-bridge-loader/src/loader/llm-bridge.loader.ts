@@ -1,4 +1,4 @@
-import { LlmManifest } from '@agentos/llm-bridge-spec';
+import { LlmManifest } from 'llm-bridge-spec';
 import { LlmBridgeConstructor } from './types';
 import { z } from 'zod';
 import { parseLlmBridgeConfig } from './parseLlmBridgeConfig';
@@ -6,10 +6,13 @@ import { parseLlmBridgeConfig } from './parseLlmBridgeConfig';
 export class LlmBridgeLoader {
   static async load(name: string): Promise<{
     manifest: LlmManifest;
-    configSchema: z.ZodTypeAny;
+    configSchema: z.AnyZodObject;
     ctor: LlmBridgeConstructor<any[]>;
   }> {
-    const bridge = await import(`${name}`);
+    const bridge = (await import(`${name}`)) as {
+      manifest: () => LlmManifest;
+      default: LlmBridgeConstructor<any[]>;
+    };
 
     return {
       manifest: bridge.manifest(),

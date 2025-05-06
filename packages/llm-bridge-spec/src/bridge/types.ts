@@ -96,8 +96,8 @@ export interface LlmBridgePrompt {
 export interface LlmBridgeResponse {
   /** 응답 내용 */
   content: MultiModalContent;
-  /** 토큰 사용량 정보 */
   usage?: LlmUsage;
+  /** 토큰 사용량 정보 */
   /** 도구 호출 결과 */
   toolCalls?: ToolCall[];
 }

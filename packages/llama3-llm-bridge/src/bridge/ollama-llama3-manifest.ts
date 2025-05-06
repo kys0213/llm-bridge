@@ -1,4 +1,4 @@
-import { LlmManifest } from '@agentos/llm-bridge-spec';
+import { LlmManifest } from 'llm-bridge-spec';
 
 export const OLLAMA_LLAMA3_MANIFEST: LlmManifest = {
   schemaVersion: '1.0.0',
