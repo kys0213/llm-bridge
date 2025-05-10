@@ -31,13 +31,6 @@ export interface LlmBridge {
   getMetadata(): Promise<LlmMetadata>;
 
   /**
-   * 콘텐츠를 임베딩합니다.
-   * @param content - 임베딩할 콘텐츠
-   * @returns 임베딩 벡터
-   */
-  embeding?(content: MultiModalContent): Promise<number[]>;
-
-  /**
    * LLM의 기능 지원 여부를 조회합니다.
    * @returns LLM의 기능 지원 정보
    */
