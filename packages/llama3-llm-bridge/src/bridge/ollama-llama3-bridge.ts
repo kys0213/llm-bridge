@@ -4,9 +4,9 @@ import {
   InvokeOption,
   LlmBridgeResponse,
   LlmMetadata,
-  ChatMessage,
   StringContent,
   ToolCall as BridgeToolCall,
+  ImageContent,
 } from 'llm-bridge-spec';
 import { Ollama, Message, ChatResponse, Tool, ToolCall } from 'ollama';
 
@@ -105,14 +105,32 @@ export class OllamaLlama3Bridge implements LlmBridge {
   }
 
   private toMessages(prompt: LlmBridgePrompt): Message[] {
-    return prompt.messages.map((msg: ChatMessage) => ({
-      role: msg.role,
-      content: msg.content.contentType === 'text' ? msg.content.value : '',
-      images:
-        msg.content.contentType === 'image' && Buffer.isBuffer(msg.content.value)
-          ? [msg.content.value]
-          : undefined,
-    }));
+    const messages: Message[] = [];
+
+    for (const message of prompt.messages) {
+      if (message.role === 'tool') {
+        const images: ImageContent[] = message.content.filter(
+          content => content.contentType === 'image' && Buffer.isBuffer(content.value)
+        ) as ImageContent[];
+
+        messages.push({
+          role: message.role,
+          content: message.content.filter(content => content.contentType === 'text').join('\n'),
+          images: images.map(image => image.value) as Buffer[],
+        });
+      } else {
+        messages.push({
+          role: message.role,
+          content: message.content.contentType === 'text' ? message.content.value : '',
+          images:
+            message.content.contentType === 'image' && Buffer.isBuffer(message.content.value)
+              ? [message.content.value]
+              : undefined,
+        });
+      }
+    }
+
+    return messages;
   }
 
   private toTools(option: InvokeOption | undefined): Tool[] {
