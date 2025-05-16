@@ -1,5 +1,5 @@
 import { LlmBridgeCapabilities } from '../manifest/types';
-import { ChatMessage, MultiModalContent } from '../message/types';
+import { Message, MultiModalContent } from '../message/types';
 
 /**
  * LLM 브릿지의 핵심 인터페이스입니다.
@@ -80,7 +80,7 @@ export interface InvokeOption {
  */
 export interface LlmBridgePrompt {
   /** 대화 메시지 목록 */
-  messages: ChatMessage[];
+  messages: Message[];
 }
 
 /**
@@ -127,7 +127,7 @@ export interface LlmBridgeTool {
   /** 도구 파라미터 스키마 */
   parameters: Record<string, unknown>;
   /** 도구 응답 스키마 */
-  response: Record<string, unknown>;
+  response?: Record<string, unknown>;
 }
 
 /**

@@ -33,7 +33,7 @@ export interface ToolMessage {
   /** 실행된 도구의 이름 */
   name: string;
   /** 도구 실행 결과 */
-  content: string;
+  content: MultiModalContent[];
   /** 도구 호출 식별자 */
   toolCallId: string;
 }
