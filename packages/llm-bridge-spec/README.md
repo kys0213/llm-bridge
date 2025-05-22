@@ -1,4 +1,4 @@
-# @llm-bridge/llm-bridge-spec
+# llm-bridge-spec
 
 LLM 서비스의 스펙과 타입을 정의하는 패키지입니다.
 
@@ -129,11 +129,12 @@ export interface LlmManifest {
 ## 📦 설치 및 사용
 
 ```bash
-npm install @llm-bridge/llm-bridge-spec
+# npm
+npm install llm-bridge-spec
 # or
-yarn add @llm-bridge/llm-bridge-spec
+yarn add llm-bridge-spec
 # or
-pnpm add @llm-bridge/llm-bridge-spec
+pnpm add llm-bridge-spec
 ```
 
 ## 🤝 기여하기
@@ -151,7 +152,7 @@ pnpm add @llm-bridge/llm-bridge-spec
 ## 사용법
 
 ```typescript
-import { LLMConfig, LLMResponse, Message, Content } from '@llm-bridge/llm-bridge-spec';
+import { LLMConfig, LLMResponse, Message, Content } from 'llm-bridge-spec';
 
 // LLM 설정
 const config: LLMConfig = {
