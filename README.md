@@ -60,7 +60,8 @@ LLM 서비스를 로드하고 관리하는 핵심 패키지입니다.
 const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('@llm-bridge/llama3-with-ollama');
 
 // manifest 의 configSchema 에 따라 cli/gui 로 추가 입력정보를 받아야함.
-const bridge = new ctor();
+// 호스트나 모델을 변경하려면 옵션으로 전달
+const bridge = new ctor({ host: 'http://localhost:11434', model: 'llama3.2' });
 
 // 입력된 값을 유효성검증
 configSchema.parse(...)
