@@ -1,24 +1,25 @@
-# @llm-bridge/llm-bridge-loader
+# llm-bridge-loader
 
 LLM 서비스를 로드하고 관리하는 핵심 패키지입니다.
 
 ## 설치
 
 ```bash
-npm install @llm-bridge/llm-bridge-loader
+# npm
+npm install llm-bridge-loader
 # or
-yarn add @llm-bridge/llm-bridge-loader
+yarn add llm-bridge-loader
 # or
-pnpm add @llm-bridge/llm-bridge-loader
+pnpm add llm-bridge-loader
 ```
 
 ## 사용법
 
 ```typescript
-import { LlmBridgeLoader } from '@llm-bridge/llm-bridge-loader';
+import { LlmBridgeLoader } from 'llm-bridge-loader';
 
 // LLM 서비스 로드
-const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('@llm-bridge/llama3-with-ollama');
+const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('llama3-with-ollama-llm-bridge');
 
 // manifest의 configSchema에 따라 cli/gui로 추가 입력정보를 받아야 함
 const bridge = new ctor();

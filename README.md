@@ -6,8 +6,12 @@ LLM Bridge는 다양한 LLM(Large Language Model) 서비스를 통합하고 관�
 
 이 프로젝트는 pnpm 모노레포로 구성되어 있으며, 다음과 같은 패키지들로 이루어져 있습니다:
 
-- `@llm-bridge/llm-bridge-loader`: LLM 서비스 로더 및 통합 관리
-- `@llm-bridge/llm-bridge-spec`: LLM 서비스 스펙 정의 및 타입
+- `llm-bridge-loader`: LLM 서비스 로더 및 통합 관리
+- `llm-bridge-spec`: LLM 서비스 스펙 정의 및 타입
+- `llama3-with-ollama-llm-bridge`: Ollama 기반 Llama3 브릿지
+- `llama3-with-bedrock-llm-bridge`: Bedrock 기반 Llama3 브릿지
+- `openai-gpt4-llm-bridge`: OpenAI GPT-4 브릿지
+- `bedrock-anthropic-llm-bridge`: Amazon Bedrock Anthropic 브릿지
 
 ## 요구사항
 
@@ -32,8 +36,8 @@ pnpm install
 pnpm build
 
 # 특정 패키지 빌드
-pnpm --filter @llm-bridge/llm-bridge-loader build
-pnpm --filter @llm-bridge/llm-bridge-spec build
+ pnpm --filter llm-bridge-loader build
+ pnpm --filter llm-bridge-spec build
 
 # 테스트 실행
 pnpm test
@@ -50,17 +54,20 @@ pnpm format
 
 ## 패키지 설명
 
-### @llm-bridge/llm-bridge-loader
+### llm-bridge-loader
 
 - 아직 MVP 구현체입니다.
 
 LLM 서비스를 로드하고 관리하는 핵심 패키지입니다.
 
 ```typescript
-const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('@llm-bridge/llama3-with-ollama');
+const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('llama3-with-ollama-llm-bridge');
+// 또는 Bedrock 사용 시
+// const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('llama3-with-bedrock-llm-bridge');
 
 // manifest 의 configSchema 에 따라 cli/gui 로 추가 입력정보를 받아야함.
-const bridge = new ctor();
+// 호스트 주소 등을 설정하여 브릿지를 생성
+const bridge = new ctor({ host: 'http://localhost:11434' });
 
 // 입력된 값을 유효성검증
 configSchema.parse(...)
@@ -80,7 +87,7 @@ const response = await bridge.invoke({
 console.log(response);
 ```
 
-### @llm-bridge/llm-bridge-spec
+### llm-bridge-spec
 
 LLM 서비스의 스펙과 타입을 정의하는 패키지입니다.
 
