@@ -12,25 +12,9 @@ export const OLLAMA_LLAMA3_MANIFEST: LlmManifest = {
         type: 'string',
         default: 'http://localhost:11434',
       },
-      temperature: {
-        type: 'number',
-        default: 0.7,
-      },
-      topP: {
-        type: 'number',
-        default: 0.9,
-      },
-      topK: {
-        type: 'number',
-        default: 40,
-      },
-      maxTokens: {
-        type: 'number',
-        default: 1000,
-      },
-      stopSequences: {
-        type: 'array',
-        default: [],
+      model: {
+        type: 'string',
+        default: 'llama3.2',
       },
     },
   },

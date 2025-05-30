@@ -17,10 +17,12 @@ export interface OllamaLlama3BridgeOptions {
 
 export class OllamaLlama3Bridge implements LlmBridge {
   private client: Ollama;
+  private host: string;
   private model: string;
 
   constructor(options?: OllamaLlama3BridgeOptions) {
-    this.client = new Ollama({ host: options?.host ?? 'http://localhost:11434' });
+    this.host = options?.host ?? 'http://localhost:11434';
+    this.client = new Ollama({ host: this.host });
     this.model = options?.model ?? 'llama3.2';
   }
 
@@ -74,6 +76,7 @@ export class OllamaLlama3Bridge implements LlmBridge {
       name: 'Llama',
       version: '3.2',
       description: 'Llama3 LLM Bridge Implementation',
+      host: this.host,
       model: this.model,
       contextWindow: 4096,
       maxTokens: 2048,
