@@ -121,9 +121,12 @@ export class OllamaLlama3Bridge implements LlmBridge {
           content => content.contentType === 'image' && Buffer.isBuffer(content.value)
         ) as ImageContent[];
 
+        const textContents = message.content.filter(
+          (content): content is StringContent => content.contentType === 'text'
+        );
         messages.push({
           role: message.role,
-          content: message.content.filter(content => content.contentType === 'text').join('\n'),
+          content: textContents.map(c => c.value).join('\n'),
           images: images.map(image => image.value) as Buffer[],
         });
       } else {
