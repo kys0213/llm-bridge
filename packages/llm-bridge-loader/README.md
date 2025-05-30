@@ -19,6 +19,8 @@ import { LlmBridgeLoader } from '@llm-bridge/llm-bridge-loader';
 
 // LLM 서비스 로드
 const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('@llm-bridge/llama3-with-ollama');
+// 또는 Bedrock 사용 시
+// const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('@llm-bridge/llama3-with-bedrock');
 
 // manifest의 configSchema에 따라 cli/gui로 추가 입력정보를 받아야 함
 const bridge = new ctor();

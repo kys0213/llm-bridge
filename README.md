@@ -8,6 +8,8 @@ LLM Bridge는 다양한 LLM(Large Language Model) 서비스를 통합하고 관�
 
 - `@llm-bridge/llm-bridge-loader`: LLM 서비스 로더 및 통합 관리
 - `@llm-bridge/llm-bridge-spec`: LLM 서비스 스펙 정의 및 타입
+- `@llm-bridge/llama3-with-ollama`: Ollama 기반 Llama3 브릿지
+- `@llm-bridge/llama3-with-bedrock`: Bedrock 기반 Llama3 브릿지
 
 ## 요구사항
 
@@ -58,6 +60,8 @@ LLM 서비스를 로드하고 관리하는 핵심 패키지입니다.
 
 ```typescript
 const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('@llm-bridge/llama3-with-ollama');
+// 또는 Bedrock 사용 시
+// const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('@llm-bridge/llama3-with-bedrock');
 
 // manifest 의 configSchema 에 따라 cli/gui 로 추가 입력정보를 받아야함.
 const bridge = new ctor();
