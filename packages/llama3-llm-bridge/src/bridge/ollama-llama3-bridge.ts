@@ -10,13 +10,20 @@ import {
 } from 'llm-bridge-spec';
 import { Ollama, Message, ChatResponse, Tool, ToolCall } from 'ollama';
 
+export interface OllamaLlama3BridgeOptions {
+  host?: string;
+  model?: string;
+}
+
 export class OllamaLlama3Bridge implements LlmBridge {
   private client: Ollama;
+  private host: string;
   private model: string;
 
-  constructor() {
-    this.client = new Ollama();
-    this.model = 'llama3.2';
+  constructor(options?: OllamaLlama3BridgeOptions) {
+    this.host = options?.host ?? 'http://localhost:11434';
+    this.client = new Ollama({ host: this.host });
+    this.model = options?.model ?? 'llama3.2';
   }
 
   async invoke(prompt: LlmBridgePrompt, option?: InvokeOption): Promise<LlmBridgeResponse> {
@@ -69,6 +76,7 @@ export class OllamaLlama3Bridge implements LlmBridge {
       name: 'Llama',
       version: '3.2',
       description: 'Llama3 LLM Bridge Implementation',
+      host: this.host,
       model: this.model,
       contextWindow: 4096,
       maxTokens: 2048,
