@@ -40,7 +40,7 @@ export const BEDROCK_LLAMA3_MANIFEST: LlmManifest = {
     supportsFunctionCall: true,
     supportsMultiTurn: true,
     supportsStreaming: true,
-    supportsVision: false,
+    supportsVision: true,
   },
   description: 'Amazon Bedrock Llama3 bridge',
 };
