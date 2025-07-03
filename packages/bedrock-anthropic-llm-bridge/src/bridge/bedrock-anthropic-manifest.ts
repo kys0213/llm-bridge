@@ -35,8 +35,8 @@ export const BEDROCK_ANTHROPIC_MANIFEST: LlmManifest = {
     supportsToolCall: true,
     supportsFunctionCall: true,
     supportsMultiTurn: true,
-    supportsStreaming: false,
-    supportsVision: false,
+    supportsStreaming: true,
+    supportsVision: true,
   },
   description: 'The bridge for Anthropic models on Amazon Bedrock',
 };
