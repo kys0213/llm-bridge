@@ -1,23 +1,12 @@
 import { LlmManifest } from 'llm-bridge-spec';
+import { OllamaGemma3nConfigSchema } from './ollama-gemma3n-bridge';
 
 export const OLLAMA_GEMMA3N_MANIFEST: LlmManifest = {
   schemaVersion: '1.0.0',
   name: 'ollama-gemma3n-bridge',
   language: 'typescript',
   entry: 'src/bridge/ollama-gemma3n-bridge.ts',
-  configSchema: {
-    type: 'object',
-    properties: {
-      host: {
-        type: 'string',
-        default: 'http://localhost:11434',
-      },
-      model: {
-        type: 'string',
-        default: 'gemma3n:latest',
-      },
-    },
-  },
+  configSchema: OllamaGemma3nConfigSchema,
   capabilities: {
     modalities: ['text'],
     supportsToolCall: true,
@@ -26,5 +15,5 @@ export const OLLAMA_GEMMA3N_MANIFEST: LlmManifest = {
     supportsStreaming: true,
     supportsVision: true,
   },
-  description: 'The bridge for the Gemma 3n model',
+  description: 'Ollama Gemma3n LLM Bridge - supports local Gemma3n models through Ollama',
 };

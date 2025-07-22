@@ -1,23 +1,12 @@
 import { LlmManifest } from 'llm-bridge-spec';
+import { OllamaLlama3ConfigSchema } from './ollama-llama3-bridge';
 
 export const OLLAMA_LLAMA3_MANIFEST: LlmManifest = {
   schemaVersion: '1.0.0',
   name: 'ollama-llama3-bridge',
   language: 'typescript',
   entry: 'src/bridge/ollama-llama3-bridge.ts',
-  configSchema: {
-    type: 'object',
-    properties: {
-      host: {
-        type: 'string',
-        default: 'http://localhost:11434',
-      },
-      model: {
-        type: 'string',
-        default: 'llama3.2',
-      },
-    },
-  },
+  configSchema: OllamaLlama3ConfigSchema,
   capabilities: {
     modalities: ['text'],
     supportsToolCall: true,
@@ -26,5 +15,5 @@ export const OLLAMA_LLAMA3_MANIFEST: LlmManifest = {
     supportsStreaming: true,
     supportsVision: true,
   },
-  description: 'The bridge for the llama3 model',
+  description: 'Ollama Llama3 LLM Bridge - supports local Llama models through Ollama',
 };

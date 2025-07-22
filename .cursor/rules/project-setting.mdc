@@ -1,13 +1,12 @@
 ---
-description: 
-globs: 
-alwaysApply: false
+alwaysApply: true
 ---
+
 ## 프로젝트 환경 셋팅
 
 - typescript 5.x 이상
 - pnpm monorepo 로 구성
-  - packages 하위에 등록해야함 
+  - packages 하위에 등록해야함
 - node 22 버전 이상
 - vite test 사용
-- build 시 별도의 번들링 작업 없이 typescript 만 사용하여 처리해야하며 cjs/esm 모두 지원해야함. 
+- build 시 별도의 번들링 작업 없이 typescript 만 사용하여 처리해야하며 cjs/esm 모두 지원해야함.

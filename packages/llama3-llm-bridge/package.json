@@ -1,7 +1,7 @@
 {
-  "name": "llama3-with-ollama-llm-bridge",
+  "name": "ollama-llama3-llm-bridge",
   "version": "0.0.1",
-  "description": "Llama3 LLM Bridge with Ollama",
+  "description": "Ollama Llama3 LLM Bridge - supports local Llama models through Ollama with type-safe configuration",
   "main": "./dist/index.js",
   "module": "./esm/index.js",
   "types": "./dist/index.d.ts",
@@ -9,8 +9,10 @@
     "build": "rimraf dist esm && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
     "dev": "tsc -p tsconfig.json --watch",
     "test": "vitest run",
+    "test:ci": "vitest run --exclude='src/**/*.e2e.test.ts'",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "vitest run src/**/*.e2e.test.ts"
   },
   "exports": {
     ".": {
@@ -20,7 +22,8 @@
     }
   },
   "dependencies": {
-    "llm-bridge-spec": "workspace:*"
+    "llm-bridge-spec": "workspace:*",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
@@ -31,7 +34,8 @@
     "ollama": "^0.5.15",
     "rimraf": "^5.0.5",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^1.0.0",
+    "vitest-mock-extended": "^3.1.0"
   },
   "peerDependencies": {
     "ollama": "^0.5.15"

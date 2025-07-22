@@ -9,26 +9,52 @@ import {
   ImageContent,
 } from 'llm-bridge-spec';
 import { Ollama, Message, ChatResponse, Tool, ToolCall } from 'ollama';
+import { z } from 'zod';
 
-export interface OllamaGemma3nBridgeOptions {
-  host?: string;
-  model?: string;
-}
+// Zod 스키마 정의
+export const OllamaGemma3nConfigSchema = z.object({
+  // Ollama 서버 설정
+  host: z.string().optional().describe('Ollama server host URL'),
+
+  // 모델 설정
+  model: z
+    .string()
+    .optional()
+    .describe('Gemma3n model name (e.g., gemma3n:latest, gemma3n:7b, gemma3n:2b)'),
+
+  // 모델 파라미터 (기본값)
+  temperature: z
+    .number()
+    .min(0)
+    .max(2)
+    .optional()
+    .describe('Sampling temperature for response generation'),
+  topP: z.number().min(0).max(1).optional().describe('Top-p nucleus sampling parameter'),
+  topK: z.number().min(0).optional().describe('Top-k sampling parameter'),
+  maxTokens: z.number().min(1).optional().describe('Maximum number of tokens to generate'),
+  stopSequences: z
+    .array(z.string())
+    .optional()
+    .describe('Array of strings that will stop generation'),
+});
+
+// 타입 추출
+export type OllamaGemma3nConfig = z.infer<typeof OllamaGemma3nConfigSchema>;
 
 export class OllamaGemma3nBridge implements LlmBridge {
-  private client: Ollama;
-  private host: string;
+  private config: OllamaGemma3nConfig;
   private model: string;
 
-  constructor(options?: OllamaGemma3nBridgeOptions) {
-    this.host = options?.host ?? 'http://localhost:11434';
-    this.client = new Ollama({ host: this.host });
-    this.model = options?.model ?? 'gemma3n:latest';
+  constructor(
+    private client: Ollama,
+    config?: OllamaGemma3nConfig
+  ) {
+    this.config = config ?? {};
+    this.model = this.config.model ?? 'gemma3n:latest';
   }
 
   async invoke(prompt: LlmBridgePrompt, option?: InvokeOption): Promise<LlmBridgeResponse> {
     const messages: Message[] = this.toMessages(prompt);
-
     const tools = this.toTools(option);
 
     const ollamaResponse = await this.client.chat({
@@ -36,11 +62,11 @@ export class OllamaGemma3nBridge implements LlmBridge {
       messages: messages,
       tools: tools,
       options: {
-        temperature: option?.temperature ?? 0.7,
-        top_p: option?.topP ?? 0.9,
-        top_k: option?.topK ?? 40,
-        num_predict: option?.maxTokens ?? 100,
-        stop: option?.stopSequence ?? ['user:'],
+        temperature: option?.temperature ?? this.config.temperature ?? 0.7,
+        top_p: option?.topP ?? this.config.topP ?? 0.9,
+        top_k: option?.topK ?? this.config.topK ?? 40,
+        num_predict: option?.maxTokens ?? this.config.maxTokens ?? 100,
+        stop: option?.stopSequence ?? this.config.stopSequences ?? ['user:'],
       },
     });
 
@@ -60,11 +86,11 @@ export class OllamaGemma3nBridge implements LlmBridge {
       tools: tools,
       stream: true,
       options: {
-        temperature: option?.temperature ?? 0.7,
-        top_p: option?.topP ?? 0.9,
-        top_k: option?.topK ?? 40,
-        num_predict: option?.maxTokens ?? 100,
-        stop: option?.stopSequence ?? ['user:'],
+        temperature: option?.temperature ?? this.config.temperature ?? 0.7,
+        top_p: option?.topP ?? this.config.topP ?? 0.9,
+        top_k: option?.topK ?? this.config.topK ?? 40,
+        num_predict: option?.maxTokens ?? this.config.maxTokens ?? 100,
+        stop: option?.stopSequence ?? this.config.stopSequences ?? ['user:'],
       },
     })) {
       yield this.toLlmBridgeResponse(chunk);
@@ -73,12 +99,11 @@ export class OllamaGemma3nBridge implements LlmBridge {
 
   async getMetadata(): Promise<LlmMetadata> {
     return {
-      name: 'Gemma',
-      version: '3n',
-      description: 'Gemma 3n LLM Bridge Implementation',
-      host: this.host,
+      name: 'Ollama Gemma3n',
+      version: '3',
+      description: 'Ollama Gemma3n LLM Bridge Implementation',
       model: this.model,
-      contextWindow: 4096,
+      contextWindow: 8192,
       maxTokens: 2048,
     };
   }
@@ -158,4 +183,25 @@ export class OllamaGemma3nBridge implements LlmBridge {
       },
     }));
   }
+}
+
+/**
+ * Factory function to create OllamaGemma3nBridge with properly configured dependencies
+ * Includes runtime validation using Zod schema
+ */
+export function createOllamaGemma3nBridge(config?: OllamaGemma3nConfig): OllamaGemma3nBridge {
+  // 런타임 검증 - 잘못된 설정이 들어오면 즉시 에러
+  const parsedConfig = config ? OllamaGemma3nConfigSchema.parse(config) : {};
+
+  // Apply defaults
+  const validatedConfig: OllamaGemma3nConfig = {
+    host: 'http://localhost:11434',
+    model: 'gemma3n:latest',
+    ...parsedConfig,
+  };
+
+  // Ollama 클라이언트 생성
+  const client = new Ollama({ host: validatedConfig.host });
+
+  return new OllamaGemma3nBridge(client, validatedConfig);
 }

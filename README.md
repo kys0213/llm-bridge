@@ -9,7 +9,7 @@ LLM Bridge는 다양한 LLM(Large Language Model) 서비스를 통합하고 관�
 - `llm-bridge-loader`: LLM 서비스 로더 및 통합 관리
 - `llm-bridge-spec`: LLM 서비스 스펙 정의 및 타입
 - `llama3-with-ollama-llm-bridge`: Ollama 기반 Llama3 브릿지
- - `gemma3n-with-ollama-llm-bridge`: Ollama 기반 Gemma 3n 브릿지
+- `gemma3n-with-ollama-llm-bridge`: Ollama 기반 Gemma 3n 브릿지
 - `llama3-with-bedrock-llm-bridge`: Bedrock 기반 Llama3 브릿지
 - `openai-gpt4-llm-bridge`: OpenAI GPT-4 브릿지
 - `bedrock-anthropic-llm-bridge`: Amazon Bedrock Anthropic 브릿지
@@ -103,4 +103,4 @@ MIT
 2. 새로운 브랜치를 생성합니다 (`git checkout -b feature/amazing-feature`).
 3. 변경사항을 커밋합니다 (`git commit -m 'Add some amazing feature'`).
 4. 브랜치에 푸시합니다 (`git push origin feature/amazing-feature`).
-5. Pull Request를 생성합니다. 
+5. Pull Request를 생성합니다.

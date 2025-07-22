@@ -1,51 +1,209 @@
 # AGENTS Guide
 
-이 문서는 레포지토리 구조와 각종 개발 가이드를 찾을 수 있는 위치를 간단히 안내합니다.
+AI Agent companion document for LLM Bridge development. This guide provides structured information for AI-assisted coding tasks.
 
-## 목차
+## Quick Reference
 
-- [코드 작성 가이드](CODE_GUIDE.md)
-- [인터페이스 스펙](INTERFACE_SPEC.md)
-- [테스트 가이드](TEST_GUIDE.md)
-- [문제 해결 전략](PROBLEM_SOLVING.md)
+**Project Type:** pnpm monorepo  
+**Tech Stack:** TypeScript 5.x+, Node.js 22+, Vitest  
+**Architecture:** Plugin-based LLM bridge system with standardized interfaces  
+**Build System:** Dual package (CJS/ESM) with TypeScript-only compilation
 
-## 1. 레포 개요
+### Core Interfaces
 
-- **프로젝트 명**: LLM Bridge
-- **목적**: 다양한 LLM(Large Language Model) 서비스를 통합하고 관리하는 모노레포
-- **패키지 관리**: pnpm
-- **Node/Pnpm 버전**: Node.js >=22, pnpm >=8
+```typescript
+// Main bridge interface - all LLM providers must implement
+interface LlmBridge {
+  invoke(prompt: LlmBridgePrompt, option?: InvokeOption): Promise<LlmBridgeResponse>;
+  invokeStream?(prompt: LlmBridgePrompt, option?: InvokeOption): AsyncIterable<LlmBridgeResponse>;
+  getMetadata(): Promise<LlmMetadata>;
+}
 
-## 2. 주요 디렉터리
+// Request structure
+interface LlmBridgePrompt {
+  messages: Message[];
+}
 
-- `packages/llm-bridge-loader` – LLM 서비스 로더 (README 포함)
-- `packages/llm-bridge-spec` – LLM 서비스 스펙 및 타입 정의 (README 포함)
-- `packages/llama3-llm-bridge` – Llama3 모델 브릿지
-- `packages/openai-gpt4-llm-bridge` – OpenAI GPT-4 브릿지
-- `packages/bedrock-anthropic-llm-bridge` – Amazon Bedrock Anthropic 브릿지
-
-패키지별 사용법과 스크립트는 각 `package.json`과 README를 확인하세요.
-
-## 3. 공통 작업 명령어 (루트 기준)
-
-```bash
-# 전체 패키지 빌드
-pnpm build
-# 테스트 실행
-pnpm test
-# 린트 검사
-pnpm lint
-# 린트 자동 수정
-pnpm lint:fix
-# 코드 포맷팅
-pnpm format
+// Response structure
+interface LlmBridgeResponse {
+  content: MultiModalContent;
+  usage?: LlmUsage;
+  toolCalls?: ToolCall[];
+}
 ```
 
-## 4. 커밋 및 PR
+## Package Map
 
-- 일반적인 GitHub 플로우를 사용합니다. (포크 → 브랜치 생성 → 커밋 → PR)
-- 자세한 절차는 README의 "기여하기" 섹션을 참고하세요.
+### Core Infrastructure
 
----
-세부 내용은 위 목차에 있는 개별 문서를 확인해 주세요.
+- **`llm-bridge-spec`** - Type definitions, interfaces, and specifications
 
+### LLM Bridge Implementations
+
+- **`llama3-llm-bridge`** - Ollama-based Llama3 bridge
+- **`openai-gpt4-llm-bridge`** - OpenAI GPT-4 bridge
+- **`bedrock-anthropic-llm-bridge`** - Amazon Bedrock Anthropic bridge
+- **`bedrock-llama3-llm-bridge`** - Amazon Bedrock Llama3 bridge
+- **`gemma3n-llm-bridge`** - Ollama-based Gemma 3n bridge
+
+### Dependencies
+
+```
+All bridges → llm-bridge-spec (workspace:*)
+Bridges use peer dependencies for their respective SDKs
+```
+
+## Development Patterns
+
+### Adding New Bridge Package
+
+1. **Create package structure:**
+
+```
+packages/{provider}-{model}-llm-bridge/
+├── src/
+│   ├── bridge/
+│   │   ├── {provider}-{model}-bridge.ts
+│   │   └── {provider}-{model}-manifest.ts
+│   ├── __tests__/
+│   │   └── {provider}-{model}-bridge.e2e.test.ts
+│   └── index.ts
+├── package.json
+├── tsconfig.json
+├── tsconfig.esm.json
+└── vitest.config.ts
+```
+
+2. **Bridge implementation template:**
+
+```typescript
+export class {Provider}{Model}Bridge implements LlmBridge {
+  async invoke(prompt: LlmBridgePrompt, option?: InvokeOption): Promise<LlmBridgeResponse>
+  async *invokeStream(prompt: LlmBridgePrompt, option?: InvokeOption): AsyncIterable<LlmBridgeResponse>
+  async getMetadata(): Promise<LlmMetadata>
+}
+```
+
+3. **Manifest template:**
+
+```typescript
+export const {PROVIDER}_{MODEL}_MANIFEST: LlmManifest = {
+  schemaVersion: '1.0.0',
+  name: '{provider}-{model}-bridge',
+  language: 'typescript',
+  entry: 'src/bridge/{provider}-{model}-bridge.ts',
+  configSchema: { /* JSON Schema */ },
+  capabilities: { /* Supported features */ },
+  description: 'The bridge for the {model} model'
+}
+```
+
+4. **Entry point pattern:**
+
+```typescript
+export default {Provider}{Model}Bridge;
+export function manifest(): LlmManifest {
+  return {PROVIDER}_{MODEL}_MANIFEST;
+}
+```
+
+### Testing Patterns
+
+- **Unit tests:** `*.test.ts` next to source files
+- **E2E tests:** `src/__tests__/*.e2e.test.ts` for integration testing
+- **Test structure:** Use `describe` blocks, meaningful assertions
+- **Coverage:** Use `@vitest/coverage-v8`
+
+### Package Configuration Patterns
+
+**Dual package support:**
+
+```json
+{
+  "main": "./dist/index.js",
+  "module": "./esm/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}
+```
+
+**Build scripts:**
+
+```json
+{
+  "build": "rimraf dist esm && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
+  "test": "vitest run",
+  "test:watch": "vitest"
+}
+```
+
+## Common Development Tasks
+
+### Workspace Commands (from root)
+
+```bash
+# Build all packages
+pnpm build
+
+# Test all packages
+pnpm test
+
+# Lint and format
+pnpm lint
+pnpm lint:fix
+pnpm format
+
+# Work with specific package
+pnpm --filter {package-name} build
+pnpm --filter {package-name} test
+```
+
+### Debugging Bridge Issues
+
+1. Check manifest configuration schema
+2. Verify invoke/invokeStream implementations
+3. Test with minimal prompt structure
+4. Validate response format compliance
+
+### Adding New Capabilities
+
+1. Update `llm-bridge-spec` types if needed
+2. Implement in bridge class
+3. Update manifest capabilities
+4. Add corresponding tests
+5. Update documentation
+
+## Naming Conventions
+
+- **Packages:** `{provider}-{model}-llm-bridge`
+- **Classes:** `{Provider}{Model}Bridge`, `{Provider}{Model}BridgeOptions`
+- **Files:** `{provider}-{model}-bridge.ts`, `{provider}-{model}-manifest.ts`
+- **Constants:** `{PROVIDER}_{MODEL}_MANIFEST`
+- **Tests:** `{provider}-{model}-bridge.e2e.test.ts`
+
+## Reference Documentation
+
+- [Code Style Guide](./docs/CODE_GUIDE.md) - Detailed coding standards and patterns
+- [Interface Specification](./docs/INTERFACE_SPEC.md) - Core interface definitions
+- [Test Guide](./docs/TEST_GUIDE.md) - Testing frameworks and patterns
+- [Problem Solving Strategy](./docs/PROBLEM_SOLVING.md) - Debugging and troubleshooting
+
+## Key Files to Check
+
+**When working on bridges:**
+
+- `packages/llm-bridge-spec/src/bridge/types.ts` - Core interfaces
+- `packages/llm-bridge-spec/src/manifest/types.ts` - Manifest structure
+- `packages/llm-bridge-spec/src/message/types.ts` - Message types
+
+**For package setup:**
+
+- Root `package.json` - Workspace scripts and dependencies
+- `pnpm-workspace.yaml` - Workspace configuration
+- Individual `package.json` files - Package-specific configuration

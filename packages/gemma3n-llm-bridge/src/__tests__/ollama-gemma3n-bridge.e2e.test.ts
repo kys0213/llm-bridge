@@ -1,12 +1,13 @@
 import { describe, beforeAll, it, expect } from 'vitest';
 import { LlmBridgePrompt, InvokeOption, StringContent } from 'llm-bridge-spec';
 import { OllamaGemma3nBridge } from '../bridge/ollama-gemma3n-bridge';
+import { Ollama } from 'ollama';
 
 describe('OllamaGemma3nBridge E2E Tests', () => {
   let bridge: OllamaGemma3nBridge;
 
   beforeAll(() => {
-    bridge = new OllamaGemma3nBridge();
+    bridge = new OllamaGemma3nBridge(new Ollama({ host: 'http://localhost:11434' }));
   });
 
   it('should generate text', async () => {
@@ -96,7 +97,7 @@ describe('OllamaGemma3nBridge E2E Tests', () => {
     const metadata = await bridge.getMetadata();
 
     expect(metadata).toBeDefined();
-    expect(metadata.name).toBe('Gemma');
+    expect(metadata.name).toBe('Ollama Gemma3n');
     expect(metadata.model).toBe('gemma3n:latest');
     expect(metadata.contextWindow).toBeGreaterThan(0);
     expect(metadata.maxTokens).toBeGreaterThan(0);
