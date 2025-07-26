@@ -55,6 +55,13 @@ Bridges use peer dependencies for their respective SDKs
 
 ## Development Patterns
 
+### Code Quality & Formatting
+
+- **Automatic formatting:** Pre-commit hooks ensure consistent code style
+- **CI Integration:** Format checks run in CI with detailed error reporting
+- **Local tools:** Use `pnpm format:check:detailed` for comprehensive format validation
+- **Configuration:** Prettier with project-specific rules in `.prettierrc.json`
+
 ### Adding New Bridge Package
 
 1. **Create package structure:**
@@ -153,11 +160,14 @@ pnpm build
 
 # Test all packages
 pnpm test
+pnpm test:ci  # Skip E2E tests (for CI)
 
-# Lint and format
+# Code quality
 pnpm lint
 pnpm lint:fix
-pnpm format
+pnpm format                    # Auto-fix formatting
+pnpm format:check             # Check formatting only
+pnpm format:check:detailed    # Detailed formatting check with error details
 
 # Work with specific package
 pnpm --filter {package-name} build
@@ -170,6 +180,13 @@ pnpm --filter {package-name} test
 2. Verify invoke/invokeStream implementations
 3. Test with minimal prompt structure
 4. Validate response format compliance
+
+### Fixing Format Issues
+
+1. **Quick fix:** `pnpm format` - automatically formats all files
+2. **Check issues:** `pnpm format:check:detailed` - shows specific problem files
+3. **Pre-commit:** Husky automatically formats staged files before commit
+4. **CI failure:** Check format issues in CI logs, fix locally with `pnpm format`
 
 ### Adding New Capabilities
 
