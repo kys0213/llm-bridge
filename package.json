@@ -14,7 +14,10 @@
     "lint:fix": "pnpm -r lint:fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "clean": "pnpm -r clean"
+    "format:check:detailed": "./scripts/format-check.sh",
+    "clean": "pnpm -r clean",
+    "prepare": "husky install",
+    "postinstall": "husky install"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
@@ -24,6 +27,14 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
