@@ -62,7 +62,9 @@ pnpm format
 LLM 서비스를 로드하고 관리하는 핵심 패키지입니다.
 
 ```typescript
-const { manifest, ctor, configSchema } = await LlmBridgeLoader.load('llama3-with-ollama-llm-bridge');
+import { OLLAMA_LLAMA3_MANIFEST } from 'llama3-llm-bridge';
+
+const { manifest, ctor, configSchema } = await LlmBridgeLoader.load<typeof OLLAMA_LLAMA3_MANIFEST>('llama3-with-ollama-llm-bridge');
 
 // manifest 의 configSchema 에 따라 cli/gui 로 추가 입력정보를 받아야함.
 // 호스트와 모델을 설정하여 브릿지를 생성
@@ -92,6 +94,10 @@ console.log(response);
 ### llm-bridge-spec
 
 LLM 서비스의 스펙과 타입을 정의하는 패키지입니다.
+
+### Bridge Loader
+
+LLM 브릿지를 로드하는 인터페이스 정의는 `docs/BRIDGE_LOADER_SPEC.md` 문서를 참고하세요.
 
 ## 라이선스
 
