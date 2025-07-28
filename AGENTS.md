@@ -118,6 +118,7 @@ export function manifest(): LlmManifest {
 
 - **Unit tests:** `*.test.ts` next to source files
 - **E2E tests:** `src/__tests__/*.e2e.test.ts` for integration testing
+  - These files are skipped in CI via `pnpm test:ci`
 - **Test structure:** Use `describe` blocks, meaningful assertions
 - **Coverage:** Use `@vitest/coverage-v8`
 
