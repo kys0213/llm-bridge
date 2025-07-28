@@ -26,9 +26,7 @@ export class DependencyLoader implements BridgeLoader {
     }
 
     const manifest = BridgeClass.manifest() as M;
-    const ctor = BridgeClass as new (
-      config: z.infer<M['configSchema']>
-    ) => LlmBridge;
+    const ctor = BridgeClass as new (config: z.infer<M['configSchema']>) => LlmBridge;
     const configSchema = manifest.configSchema;
 
     return { manifest, ctor, configSchema };
