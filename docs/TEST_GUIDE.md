@@ -19,6 +19,8 @@ This document provides guidelines for writing and running tests in the LLM Bridg
 
 - Place E2E tests in `src/__tests__/` directory with `.e2e.test.ts` extension
 - Test complete workflows and integrations with external services
+- These files are automatically skipped by `pnpm test:ci`, so ensure any
+  network-dependent tests follow this naming convention.
 
 ## Running Tests
 

@@ -20,12 +20,11 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "dependencies": {
-    "llm-bridge-spec": "workspace:*",
-    "openai": "^4.28.0",
-    "zod": "^4.0.5"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "llm-bridge-spec": "workspace:*",
+    "zod": "^4.0.5",
+    "openai": "^4.28.0",
     "@types/node": "^20.11.24",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
@@ -37,6 +36,8 @@
     "vitest-mock-extended": "^3.1.0"
   },
   "peerDependencies": {
-    "openai": "^4.28.0"
+    "openai": "^4.28.0",
+    "llm-bridge-spec": "workspace:*",
+    "zod": "^4.0.5"
   }
 }

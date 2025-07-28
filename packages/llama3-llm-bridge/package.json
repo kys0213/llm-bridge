@@ -21,11 +21,10 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "dependencies": {
-    "llm-bridge-spec": "workspace:*",
-    "zod": "^4.0.5"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "llm-bridge-spec": "workspace:*",
+    "zod": "^4.0.5",
     "@types/node": "^20.11.24",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
@@ -38,6 +37,8 @@
     "vitest-mock-extended": "^3.1.0"
   },
   "peerDependencies": {
-    "ollama": "^0.5.15"
+    "ollama": "^0.5.15",
+    "llm-bridge-spec": "workspace:*",
+    "zod": "^4.0.5"
   }
 }
