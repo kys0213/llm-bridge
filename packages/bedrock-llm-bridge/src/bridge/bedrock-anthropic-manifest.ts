@@ -1,5 +1,5 @@
 import { LlmManifest } from 'llm-bridge-spec';
-import { BedrockAnthropicConfigSchema } from './bedrock-anthropic-bridge';
+import { BedrockAnthropicConfigSchema } from './types';
 
 export const BEDROCK_ANTHROPIC_MANIFEST: LlmManifest = {
   schemaVersion: '1.0.0',

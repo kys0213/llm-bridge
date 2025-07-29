@@ -84,84 +84,6 @@ importers:
         specifier: ^3.24.6
         version: 3.24.6(zod@4.0.5)
 
-  packages/gemma3n-llm-bridge:
-    devDependencies:
-      '@types/node':
-        specifier: ^20.11.24
-        version: 20.17.31
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^7.1.0
-        version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
-      '@typescript-eslint/parser':
-        specifier: ^7.1.0
-        version: 7.18.0(eslint@8.57.1)(typescript@5.8.3)
-      '@vitest/coverage-v8':
-        specifier: ^1.0.0
-        version: 1.6.1(vitest@1.6.1(@types/node@20.17.31))
-      eslint:
-        specifier: ^8.57.0
-        version: 8.57.1
-      llm-bridge-spec:
-        specifier: workspace:*
-        version: link:../llm-bridge-spec
-      ollama:
-        specifier: ^0.5.15
-        version: 0.5.15
-      rimraf:
-        specifier: ^5.0.5
-        version: 5.0.10
-      typescript:
-        specifier: ^5.0.0
-        version: 5.8.3
-      vitest:
-        specifier: ^1.0.0
-        version: 1.6.1(@types/node@20.17.31)
-      vitest-mock-extended:
-        specifier: ^3.1.0
-        version: 3.1.0(typescript@5.8.3)(vitest@1.6.1(@types/node@20.17.31))
-      zod:
-        specifier: ^4.0.5
-        version: 4.0.5
-
-  packages/llama3-llm-bridge:
-    devDependencies:
-      '@types/node':
-        specifier: ^20.11.24
-        version: 20.17.31
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^7.1.0
-        version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
-      '@typescript-eslint/parser':
-        specifier: ^7.1.0
-        version: 7.18.0(eslint@8.57.1)(typescript@5.8.3)
-      '@vitest/coverage-v8':
-        specifier: ^1.0.0
-        version: 1.6.1(vitest@1.6.1(@types/node@20.17.31))
-      eslint:
-        specifier: ^8.57.0
-        version: 8.57.1
-      llm-bridge-spec:
-        specifier: workspace:*
-        version: link:../llm-bridge-spec
-      ollama:
-        specifier: ^0.5.15
-        version: 0.5.15
-      rimraf:
-        specifier: ^5.0.5
-        version: 5.0.10
-      typescript:
-        specifier: ^5.0.0
-        version: 5.8.3
-      vitest:
-        specifier: ^1.0.0
-        version: 1.6.1(@types/node@20.17.31)
-      vitest-mock-extended:
-        specifier: ^3.1.0
-        version: 3.1.0(typescript@5.8.3)(vitest@1.6.1(@types/node@20.17.31))
-      zod:
-        specifier: ^4.0.5
-        version: 4.0.5
-
   packages/llm-bridge-loader:
     devDependencies:
       '@types/node':
@@ -218,6 +140,49 @@ importers:
       zod:
         specifier: ^4.0.5
         version: 4.0.5
+
+  packages/ollama-llm-bridge:
+    dependencies:
+      llm-bridge-spec:
+        specifier: workspace:*
+        version: link:../llm-bridge-spec
+      ollama:
+        specifier: ^0.5.15
+        version: 0.5.15
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+      zod:
+        specifier: ^4.0.5
+        version: 4.0.5
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.24
+        version: 20.17.31
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.1.0
+        version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+      '@typescript-eslint/parser':
+        specifier: ^7.1.0
+        version: 7.18.0(eslint@8.57.1)(typescript@5.8.3)
+      '@vitest/coverage-v8':
+        specifier: ^1.0.0
+        version: 1.6.1(vitest@1.6.1(@types/node@20.17.31))
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.1
+      rimraf:
+        specifier: ^5.0.5
+        version: 5.0.10
+      typescript:
+        specifier: ^5.0.0
+        version: 5.8.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.17.31)
+      vitest-mock-extended:
+        specifier: ^3.1.0
+        version: 3.1.0(typescript@5.8.3)(vitest@1.6.1(@types/node@20.17.31))
 
   packages/openai-llm-bridge:
     devDependencies:
@@ -1986,6 +1951,10 @@ packages:
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
+
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
 
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
@@ -4173,6 +4142,8 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
+
+  uuid@11.1.0: {}
 
   uuid@9.0.1: {}
 

@@ -1,15 +1,17 @@
 import { Readable } from 'stream';
 
 export type Message = UserMessage | AssistantMessage | SystemMessage | ToolMessage;
+
+export type MessageRole = 'user' | 'assistant' | 'system' | 'tool';
+
 /**
  * 대화 메시지의 기본 구조입니다.
  */
-
 export interface ChatMessage {
   /** 메시지 작성자의 역할 */
-  role: 'user' | 'assistant' | 'system';
+  role: MessageRole;
   /** 메시지 내용 (다중 모달 지원) */
-  content: MultiModalContent;
+  content: MultiModalContent[];
 }
 
 export interface UserMessage extends ChatMessage {
@@ -27,13 +29,11 @@ export interface SystemMessage extends ChatMessage {
  * 도구 실행 결과 메시지 구조입니다.
  */
 
-export interface ToolMessage {
+export interface ToolMessage extends ChatMessage {
   /** 도구 메시지 역할 (항상 'tool') */
   role: 'tool';
   /** 실행된 도구의 이름 */
   name: string;
-  /** 도구 실행 결과 */
-  content: MultiModalContent[];
   /** 도구 호출 식별자 */
   toolCallId: string;
 }

@@ -1,0 +1,77 @@
+{
+  "name": "ollama-llm-bridge",
+  "version": "0.0.1",
+  "description": "Universal Ollama LLM Bridge for multiple models (Llama, Gemma, etc.)",
+  "main": "./dist/index.js",
+  "module": "./esm/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "esm",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
+    "dev": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:ci": "vitest run --exclude='src/**/*.e2e.test.ts'",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "clean": "rm -rf dist && rm -rf esm"
+  },
+  "keywords": [
+    "llm",
+    "bridge",
+    "ollama",
+    "llama",
+    "gemma",
+    "ai",
+    "machine-learning",
+    "typescript"
+  ],
+  "author": "LLM Bridge Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/llm-bridge.git",
+    "directory": "packages/ollama-llm-bridge"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/llm-bridge/issues"
+  },
+  "homepage": "https://github.com/your-org/llm-bridge/tree/main/packages/ollama-llm-bridge#readme",
+  "dependencies": {
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.57.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "vitest-mock-extended": "^3.1.0"
+  },
+  "peerDependencies": {
+    "llm-bridge-spec": "workspace:*",
+    "ollama": "^0.5.15",
+    "zod": "^4.0.5"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

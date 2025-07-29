@@ -6,13 +6,16 @@
   "module": "./esm/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rimraf dist esm && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
-    "dev": "tsc -p tsconfig.json --watch",
+    "build": "pnpm clean && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
+    "dev": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:ci": "vitest run --exclude='src/**/*.e2e.test.ts'",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "vitest run src/**/*.e2e.test.ts"
+    "test:e2e": "vitest run src/**/*.e2e.test.ts",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "clean": "rm -rf dist && rm -rf esm"
   },
   "exports": {
     ".": {

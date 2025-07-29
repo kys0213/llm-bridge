@@ -1,59 +1,96 @@
 import { BedrockRuntimeClient } from '@aws-sdk/client-bedrock-runtime';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { ModelNotSupportedError } from 'llm-bridge-spec';
 import { BedrockBridge } from '../bridge/bedrock-bridge';
+import { AbstractModel } from '../models/base/abstract-model';
+import { AnthropicModel } from '../models/anthropic/anthropic-model';
+import { MetaModel } from '../models/meta/meta-model';
 import { BedrockConfig, BedrockConfigSchema } from '../bridge/types';
+import { handleConfigurationError, handleFactoryError } from '../utils/error-handler';
+
+/**
+ * 모델 ID에 따라 적절한 ModelBridge를 생성합니다.
+ */
+function createModelBridge(modelId: string): AbstractModel<unknown, unknown> {
+  const availableBridges = [new AnthropicModel(modelId), new MetaModel(modelId)];
+
+  for (const bridge of availableBridges) {
+    if (bridge.supportsModel(modelId)) {
+      return bridge;
+    }
+  }
+
+  throw new ModelNotSupportedError(modelId, ['anthropic.claude-*', 'meta.llama*']);
+}
 
 /**
  * Smart factory function to create BedrockBridge with properly configured dependencies
  * Includes runtime validation using Zod schema and automatic AWS client setup
  */
 export function createBedrockBridge(config?: BedrockConfig): BedrockBridge {
-  // 런타임 검증 - 잘못된 설정이 들어오면 즉시 에러
-  const parsedConfig = config
-    ? BedrockConfigSchema.parse(config)
-    : { modelId: 'anthropic.claude-3-haiku-20240307-v1:0' };
+  const parsedConfig = parseConfig(config);
 
-  // Apply defaults
-  const validatedConfig: BedrockConfig = {
-    region: 'us-east-1',
-    ...parsedConfig,
-  };
+  const modelBridge = createModelBridge(parsedConfig.modelId);
 
-  const region = validatedConfig.region!;
-
-  // Build AWS client configuration
-  const clientConfig: Record<string, unknown> = { region };
-
-  // Add AWS credentials if provided
-  if (validatedConfig.accessKeyId && validatedConfig.secretAccessKey) {
-    clientConfig.credentials = {
-      accessKeyId: validatedConfig.accessKeyId,
-      secretAccessKey: validatedConfig.secretAccessKey,
-      ...(validatedConfig.sessionToken && { sessionToken: validatedConfig.sessionToken }),
+  try {
+    // Apply defaults
+    const validatedConfig: BedrockConfig = {
+      region: 'us-east-1',
+      ...parsedConfig,
     };
-  }
 
-  // Add profile if provided (alternative to explicit credentials)
-  if (validatedConfig.profile) {
-    // Note: Profile is handled by AWS SDK automatically via AWS_PROFILE env var
-    // or ~/.aws/credentials file, but we can set it explicitly
-    process.env.AWS_PROFILE = validatedConfig.profile;
-  }
+    // Set default modelId if not provided
+    if (!validatedConfig.modelId) {
+      validatedConfig.modelId = 'anthropic.claude-3-haiku-20240307-v1:0';
+    }
 
-  // Add custom endpoint if provided (useful for LocalStack or custom endpoints)
-  if (validatedConfig.endpoint) {
-    clientConfig.endpoint = validatedConfig.endpoint;
-  }
+    const region = validatedConfig.region!;
 
-  // Add custom HTTP handler if provided
-  if (validatedConfig.httpAgent) {
-    clientConfig.requestHandler = new NodeHttpHandler({
-      httpAgent: validatedConfig.httpAgent,
-    });
-  }
+    // Build client configuration
+    const clientConfig: Record<string, unknown> = { region };
 
-  const client = new BedrockRuntimeClient(clientConfig);
-  return new BedrockBridge(client, validatedConfig);
+    // Add AWS credentials if provided
+    if (validatedConfig.accessKeyId && validatedConfig.secretAccessKey) {
+      clientConfig.credentials = {
+        accessKeyId: validatedConfig.accessKeyId,
+        secretAccessKey: validatedConfig.secretAccessKey,
+        ...(validatedConfig.sessionToken && { sessionToken: validatedConfig.sessionToken }),
+      };
+    }
+
+    // Add profile if provided (alternative to explicit credentials)
+    if (validatedConfig.profile) {
+      // Note: Profile is handled by AWS SDK automatically via AWS_PROFILE env var
+      // or ~/.aws/credentials file, but we can set it explicitly
+      process.env.AWS_PROFILE = validatedConfig.profile;
+    }
+
+    // Add custom endpoint if provided (useful for LocalStack or custom endpoints)
+    if (validatedConfig.endpoint) {
+      clientConfig.endpoint = validatedConfig.endpoint;
+    }
+
+    // Add custom HTTP handler if provided
+    if (validatedConfig.httpAgent) {
+      clientConfig.requestHandler = new NodeHttpHandler({
+        httpAgent: validatedConfig.httpAgent,
+      });
+    }
+
+    const client = new BedrockRuntimeClient(clientConfig);
+
+    return new BedrockBridge(client, modelBridge, validatedConfig);
+  } catch (error: unknown) {
+    handleFactoryError(error, 'Bedrock');
+  }
+}
+
+function parseConfig(config?: BedrockConfig) {
+  try {
+    return BedrockConfigSchema.parse(config ?? {});
+  } catch (error: unknown) {
+    handleConfigurationError(error, 'Bedrock');
+  }
 }
 
 /**

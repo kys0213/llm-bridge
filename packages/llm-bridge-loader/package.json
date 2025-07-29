@@ -2,19 +2,22 @@
   "name": "llm-bridge-loader",
   "version": "0.0.1",
   "description": "LLM Bridge Loader - load bridges from dependencies",
-  "main": "./dist/index.js",
-  "module": "./esm/index.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./esm/index.js",
-      "require": "./dist/index.js",
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js",
       "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
-    "build": "rimraf dist esm && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
-    "dev": "tsc -p tsconfig.json --watch",
+    "build": "pnpm build:clean && pnpm build:esm && pnpm build:cjs",
+    "build:clean": "rm -rf dist",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "dev": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:ci": "vitest run",
     "test:watch": "vitest"

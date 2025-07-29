@@ -175,3 +175,45 @@ export function manifest(): LlmManifest {
 2. **Clean Architecture** — aim for a clear dependency flow and avoid circular references.
 3. **Test-Driven Development** — write tests first when adding new behavior.
 4. **Type Safety** — favor generics and avoid `any`. If you must accept unknown input, use `unknown` and guard types before use.
+
+### Type Guards
+
+Use type guards instead of `as any` assertions to ensure type safety. Create specific type guard functions for runtime type checking.
+
+#### ✅ Good: Using Type Guards
+
+```typescript
+// Define type guard functions
+function hasErrorCode(error: unknown): error is { code: string } {
+  return typeof error === 'object' && error !== null && 'code' in error;
+}
+
+function hasCause(error: unknown): error is { cause: unknown } {
+  return typeof error === 'object' && error !== null && 'cause' in error;
+}
+
+// Use type guards in error handling
+if (error.name === 'TypeError' && errorMessage.includes('fetch failed')) {
+  if (hasCause(error) && hasErrorCode(error.cause)) {
+    if (error.cause.code === 'ECONNREFUSED') {
+      // Safe to access error.cause.code
+    }
+  }
+}
+```
+
+#### ❌ Bad: Using Type Assertions
+
+```typescript
+// Avoid this - no runtime safety
+const cause = (error as any).cause;
+if (cause && cause.code === 'ECONNREFUSED') {
+  // This might fail at runtime
+}
+```
+
+#### Type Guard Naming Convention
+
+- Use `is{Type}` for type predicate functions
+- Use `has{Property}` for property existence checks
+- Example: `isNetworkError`, `hasStatusCode`, `isFetchError`

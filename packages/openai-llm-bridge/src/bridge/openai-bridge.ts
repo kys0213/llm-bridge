@@ -163,8 +163,14 @@ export class OpenAIBridge implements LlmBridge {
             .join('\n'),
           tool_call_id: msg.toolCallId,
         });
-      } else if (msg.content.contentType === 'text') {
-        messages.push({ role: msg.role, content: msg.content.value });
+      } else {
+        messages.push({
+          role: msg.role,
+          content: msg.content
+            .filter(c => c.contentType === 'text')
+            .map(c => c.value)
+            .join('\n'),
+        });
       }
     }
 
