@@ -138,8 +138,6 @@ export interface LlmMetadata extends Record<string, unknown> {
   icon?: string;
   /** LLM 이름 */
   name: string;
-  /** LLM 버전 */
-  version: string;
   /** LLM 설명 */
   description: string;
   /** 사용 중인 모델명 */

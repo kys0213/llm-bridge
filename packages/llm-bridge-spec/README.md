@@ -1,8 +1,29 @@
 # llm-bridge-spec
 
-LLM 서비스의 스펙과 타입을 정의하는 패키지입니다.
+LLM 서비스의 스펙, 타입, 그리고 공통 에러 클래스를 정의하는 패키지입니다.
 
-## 🧭 1. 철학 (Philosophy)
+## 📋 목차
+
+1. [개요](#개요)
+2. [철학](#철학)
+3. [설치](#설치)
+4. [인터페이스 명세](#인터페이스-명세)
+5. [에러 클래스](#에러-클래스)
+6. [사용 예시](#사용-예시)
+7. [기여하기](#기여하기)
+
+## 🎯 개요
+
+`llm-bridge-spec`은 다양한 LLM 서비스들을 통합하여 사용할 수 있도록 표준화된 인터페이스와 에러 처리 체계를 제공합니다.
+
+### 주요 구성 요소
+
+- **표준 인터페이스**: 모든 LLM 브릿지가 따라야 하는 공통 인터페이스
+- **타입 정의**: TypeScript 타입 안전성을 보장하는 타입 시스템
+- **에러 클래스**: 일관된 에러 처리를 위한 계층적 에러 클래스 체계
+- **매니페스트 스펙**: 브릿지 메타데이터 및 설정 스키마 정의
+
+## 🧭 철학
 
 ### 핵심 철학
 
@@ -14,127 +35,350 @@ LLM 서비스의 스펙과 타입을 정의하는 패키지입니다.
 - **추상화의 균형**: Bridge는 LLM 연결만 담당하고, 프롬프트 최적화는 Agent 또는 사용자에게 맡긴다.
 - **구현의 자유, 구조는 선언적으로**: Node.js, Python, CLI 등 다양한 방식으로 실행 가능하지만, config는 JSON 기반으로 통일
 - **언어 독립성**: Node.js, Python, Java, Rust 등 어떤 언어에서도 구현 가능
-- **입력 설정의 자동화**: `config.schema.json`을 기반으로 GUI/CLI에서 자동 입력 폼 구성 가능
+- **일관된 에러 처리**: 모든 브릿지에서 동일한 에러 클래스를 사용하여 예측 가능한 에러 처리
 - **작고 명확한 시작**: 큰 스펙보다 작지만 분명한 구조로 시작하여 선택받도록 한다
 
-## 📋 2. 요구사항 (Requirements)
+### 핵심 메시지
 
-### 필수 구성 요소
+> **LLM Bridge는 프롬프트를 최적화하지 않습니다.**
+> 단지 다양한 모델을 구조적으로 선언하고, 교체 가능한 구조를 제공할 뿐입니다.
 
-- `bridge.manifest.json`: 브릿지 메타데이터 및 엔트리포인트 정의
-- `config.schema.json`: JSON Schema 기반 입력 명세 정의
-- 브릿지는 `chat()` 인터페이스를 반드시 구현해야 함 (선택적으로 `chatStream()`도 구현 가능)
+모델 연결은 Bridge에 맡기고, 사용자 경험은 각 Agent에 맡기세요.
 
-### 기능 요구사항
+## 📦 설치
 
-| 항목                                  | 설명                                                   |
-| ------------------------------------- | ------------------------------------------------------ |
-| ✅ 선언적 구성                        | 모든 브릿지는 manifest + configSchema를 반드시 포함    |
-| ✅ 다언어 지원                        | Node.js, Python, Java 등 다양한 언어로 구현 가능       |
-| ✅ 독립 실행 가능                     | CLI, GUI, Agent에서 독립적으로 로딩 및 실행 가능       |
-| ✅ Proxy, 인증은 bridge 내부에서 처리 | 표준에서는 schema만 정의하고 실제 처리는 구현체가 담당 |
-| ✅ 프롬프트 최적화는 책임지지 않음    | 품질은 각 Agent 또는 사용자의 몫임                     |
+```bash
+# npm
+npm install llm-bridge-spec
 
-## 🧩 3. 인터페이스 명세 (Interface Spec)
+# yarn
+yarn add llm-bridge-spec
+
+# pnpm
+pnpm add llm-bridge-spec
+```
+
+## 🧩 인터페이스 명세
 
 ### `LlmBridge`
 
+모든 LLM 브릿지가 구현해야 하는 기본 인터페이스입니다.
+
 ```typescript
 export interface LlmBridge {
-  chat(prompt: LlmBridgePrompt, option: ChatOption): Promise<LlmBridgeResponse>;
-  chatStream?(prompt: LlmBridgePrompt, option: ChatOption): AsyncIterable<LlmBridgeResponse>;
+  invoke(prompt: LlmBridgePrompt, option?: InvokeOption): Promise<LlmBridgeResponse>;
+  invokeStream?(prompt: LlmBridgePrompt, option?: InvokeOption): AsyncIterable<LlmBridgeResponse>;
   getMetadata(): Promise<LlmMetadata>;
-  getCapabilities?(): Promise<LlmBridgeCapabilities>;
-  getUsage?(): Promise<LlmUsage>;
 }
 ```
 
 ### `LlmBridgePrompt`
 
+LLM에 전달할 프롬프트를 정의합니다.
+
 ```typescript
 export interface LlmBridgePrompt {
-  messages: ChatMessage[];
+  messages: LlmBridgeMessage[];
 }
 
-export interface ChatMessage {
+export interface LlmBridgeMessage {
   role: 'user' | 'assistant' | 'system';
-  content: MultiModalContent;
+  content: LlmBridgeContent;
 }
 ```
 
-### `ChatOption`
+### `InvokeOption`
+
+LLM 호출 시 추가 옵션을 정의합니다.
 
 ```typescript
-export interface ChatOption {
+export interface InvokeOption {
+  temperature?: number;
+  maxTokens?: number;
+  topP?: number;
+  topK?: number;
+  stopSequence?: string[];
   tools?: LlmBridgeTool[];
-  historyCompression?: boolean;
 }
 ```
 
-### `LlmBridgeCapabilities`
+### `LlmBridgeResponse`
+
+LLM의 응답을 정의합니다.
 
 ```typescript
-export interface LlmBridgeCapabilities {
-  supportsStream: boolean;
-  supportsTools: boolean;
-  supportsUsage: boolean;
+export interface LlmBridgeResponse {
+  content: LlmBridgeContent;
+  usage?: LlmUsage;
+  toolCalls?: LlmBridgeToolCall[];
 }
 ```
 
-### `LlmManifest`
+## ⚠️ 에러 클래스
+
+`llm-bridge-spec`은 일관된 에러 처리를 위한 계층적 에러 클래스 체계를 제공합니다.
+
+### 기본 에러 클래스
+
+#### `LlmBridgeError`
+
+모든 브릿지 에러의 기본 클래스입니다.
 
 ```typescript
-export interface LlmManifest {
-  schemaVersion: string;
-  name: string;
-  language: string;
-  entry: string;
-  configSchema: JSONSchema;
-  capabilities: LlmBridgeCapabilities;
-  description: string;
+import { LlmBridgeError } from 'llm-bridge-spec';
+
+throw new LlmBridgeError('Something went wrong', originalError);
+```
+
+#### `ConfigurationError`
+
+설정 검증 실패 시 사용합니다.
+
+```typescript
+import { ConfigurationError } from 'llm-bridge-spec';
+
+try {
+  const config = ConfigSchema.parse(userConfig);
+} catch (error) {
+  throw new ConfigurationError('Invalid configuration provided', error);
 }
 ```
 
-## 🚀 4. MVP 계획 (MVP Plan)
+### API 에러 클래스
 
-### ✅ 1단계: 작고 명확한 시작
+#### `APIError`
 
-- [ ] GitHub에 `llm-bridge-spec` 레포 공개
-- [ ] 샘플 브릿지 (`@llm-bridge/openai-gpt4`) 포함
-- [ ] `bridge.manifest.json`, `config.schema.json`, `bridge.ts` 포함
+기본 API 에러 클래스입니다.
 
-### ✅ 2단계: 자동 입력 CLI
+```typescript
+import { APIError } from 'llm-bridge-spec';
 
-- [ ] `loadBridgeAndRun.ts` 스크립트 제공
-- [ ] schema → 입력 프롬프트 자동 생성
+throw new APIError('API call failed', 500, 'internal_server_error');
+```
 
-### ✅ 3단계: 레지스트리 & GUI
+#### `RateLimitError`
 
-- [ ] 여러 브릿지를 등록 가능한 구조 설계
-- [ ] React 기반 GUI에서 schema 기반 폼 자동 생성
+Rate limit 초과 시 사용합니다.
 
-### ✅ 4단계: 철학 정리 및 공개
+```typescript
+import { RateLimitError } from 'llm-bridge-spec';
 
-- [ ] README에 철학 명시: "프롬프트는 Bridge가 최적화하지 않습니다"
-- [ ] LinkedIn / Hacker News / Reddit 등에서 반응 확인
+// OpenAI API 응답에서
+if (response.status === 429) {
+  const retryAfter = parseInt(response.headers['retry-after'] || '60');
+  const resetTime = new Date(response.headers['x-ratelimit-reset-requests'] * 1000);
 
-## ✨ 핵심 메시지
+  throw new RateLimitError(
+    'Rate limit exceeded',
+    retryAfter, // 재시도까지 대기 시간 (초)
+    100, // 시간당 허용 요청 수
+    0, // 남은 요청 수
+    resetTime // 리셋 시간
+  );
+}
+```
 
-> **LLM Bridge는 프롬프트를 최적화하지 않습니다.**
-> 단지 다양한 모델을 구조적으로 선언하고, 교체 가능한 구조를 제공할 뿐입니다.
+#### `QuotaExceededError`
 
-모델 연결은 Bridge에 맡기고,
-사용자 경험은 각 Agent에 맡기세요.
+월간/일간 quota 초과 시 사용합니다.
 
-## 📦 설치 및 사용
+```typescript
+import { QuotaExceededError } from 'llm-bridge-spec';
 
-```bash
-# npm
-npm install llm-bridge-spec
-# or
-yarn add llm-bridge-spec
-# or
-pnpm add llm-bridge-spec
+throw new QuotaExceededError(
+  'Monthly token quota exceeded',
+  'monthly', // quota 타입
+  1000000, // 사용된 토큰 수
+  1000000, // 총 토큰 수
+  new Date('2024-02-01') // 리셋 날짜
+);
+```
+
+#### `InvalidRequestError`
+
+잘못된 요청 시 사용합니다.
+
+```typescript
+import { InvalidRequestError } from 'llm-bridge-spec';
+
+throw new InvalidRequestError(
+  'Missing required parameters',
+  ['model', 'messages'] // 누락된 필드들
+);
+```
+
+#### `InsufficientCreditsError`
+
+크레딧 부족 시 사용합니다.
+
+```typescript
+import { InsufficientCreditsError } from 'llm-bridge-spec';
+
+throw new InsufficientCreditsError(
+  'Not enough credits for this request',
+  10, // 현재 크레딧
+  50 // 필요한 크레딧
+);
+```
+
+#### `ServiceUnavailableError`
+
+서비스 일시 중단 시 사용합니다.
+
+```typescript
+import { ServiceUnavailableError } from 'llm-bridge-spec';
+
+throw new ServiceUnavailableError(
+  'Service is under maintenance',
+  3600 // 재시도까지 대기 시간 (초)
+);
+```
+
+### 기타 에러 클래스
+
+- **`NetworkError`** - 네트워크 연결 문제
+- **`AuthenticationError`** - 인증 실패
+- **`ModelNotSupportedError`** - 지원하지 않는 모델
+- **`ResponseParsingError`** - 응답 파싱 실패
+- **`TimeoutError`** - 요청 타임아웃
+
+## 🚀 사용 예시
+
+### 브릿지 구현체에서의 에러 처리
+
+#### OpenAI Bridge 예시
+
+```typescript
+import {
+  RateLimitError,
+  InvalidRequestError,
+  AuthenticationError,
+  ServiceUnavailableError,
+  QuotaExceededError,
+  LlmBridgeError,
+} from 'llm-bridge-spec';
+
+export class OpenAIBridge implements LlmBridge {
+  async invoke(prompt: LlmBridgePrompt): Promise<LlmBridgeResponse> {
+    try {
+      const response = await this.client.chat.completions.create({
+        model: this.model,
+        messages: this.toMessages(prompt),
+      });
+
+      return this.toLlmBridgeResponse(response);
+    } catch (error: any) {
+      // OpenAI API 에러를 브릿지 에러로 변환
+      if (error.status === 401) {
+        throw new AuthenticationError('Invalid API key', error);
+      }
+
+      if (error.status === 429) {
+        if (error.type === 'insufficient_quota') {
+          throw new QuotaExceededError(
+            'OpenAI quota exceeded',
+            'monthly',
+            undefined,
+            undefined,
+            undefined,
+            error
+          );
+        }
+        throw new RateLimitError('Rate limit exceeded', 60, undefined, undefined, undefined, error);
+      }
+
+      if (error.status === 400) {
+        throw new InvalidRequestError(error.message, undefined, error);
+      }
+
+      if (error.status >= 500) {
+        throw new ServiceUnavailableError(
+          'OpenAI service temporarily unavailable',
+          undefined,
+          error
+        );
+      }
+
+      // 기타 에러
+      throw new LlmBridgeError(`OpenAI API error: ${error.message}`, error);
+    }
+  }
+}
+```
+
+### 클라이언트에서의 에러 처리
+
+```typescript
+import {
+  RateLimitError,
+  QuotaExceededError,
+  AuthenticationError,
+  NetworkError,
+} from 'llm-bridge-spec';
+
+async function handleLLMRequest(bridge: LlmBridge, prompt: LlmBridgePrompt) {
+  try {
+    return await bridge.invoke(prompt);
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      console.log(`Rate limited. Retry after ${error.retryAfter} seconds`);
+      // 재시도 로직
+      await new Promise(resolve => setTimeout(resolve, error.retryAfter! * 1000));
+      return handleLLMRequest(bridge, prompt);
+    }
+
+    if (error instanceof QuotaExceededError) {
+      console.log(`Quota exceeded (${error.quotaType}). Reset at: ${error.resetTime}`);
+      // 사용자에게 quota 초과 알림
+      throw error;
+    }
+
+    if (error instanceof AuthenticationError) {
+      console.log('Authentication failed. Please check your API key');
+      // 인증 정보 재설정 유도
+      throw error;
+    }
+
+    if (error instanceof NetworkError) {
+      console.log('Network error occurred. Retrying...');
+      // 네트워크 재시도 로직
+      return handleLLMRequest(bridge, prompt);
+    }
+
+    // 기타 에러
+    console.error('Unexpected error:', error.message);
+    throw error;
+  }
+}
+```
+
+### 로깅 및 모니터링
+
+```typescript
+import { LlmBridgeError, RateLimitError, QuotaExceededError } from 'llm-bridge-spec';
+
+function logError(error: Error, context: any) {
+  if (error instanceof LlmBridgeError) {
+    // 구조화된 로깅
+    logger.error({
+      errorType: error.name,
+      message: error.message,
+      statusCode: 'statusCode' in error ? error.statusCode : undefined,
+      apiErrorCode: 'apiErrorCode' in error ? error.apiErrorCode : undefined,
+      context,
+      cause: error.cause?.message,
+    });
+
+    // 특정 에러에 대한 메트릭 수집
+    if (error instanceof RateLimitError) {
+      metrics.increment('llm_bridge.rate_limit_errors');
+    } else if (error instanceof QuotaExceededError) {
+      metrics.increment('llm_bridge.quota_exceeded_errors');
+    }
+  } else {
+    logger.error({ message: error.message, context });
+  }
+}
 ```
 
 ## 🤝 기여하기
@@ -147,88 +391,4 @@ pnpm add llm-bridge-spec
 
 ## 📄 라이선스
 
-이 프로젝트는 MIT 라이선스 하에 있습니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
-## 사용법
-
-```typescript
-import { LLMConfig, LLMResponse, Message, Content } from 'llm-bridge-spec';
-
-// LLM 설정
-const config: LLMConfig = {
-  model: 'gpt-3.5-turbo',
-  apiKey: 'your-api-key',
-  temperature: 0.7,
-};
-
-// 메시지 생성
-const message: Message = {
-  role: 'user',
-  content: {
-    contentType: 'text',
-    value: 'Hello, world!',
-  } as Content,
-};
-
-// LLM 응답 타입
-const response: LLMResponse = {
-  text: 'Hello, world!',
-  usage: {
-    promptTokens: 5,
-    completionTokens: 5,
-    totalTokens: 10,
-  },
-};
-```
-
-## API
-
-### `LLMConfig`
-
-LLM 서비스의 설정을 정의하는 인터페이스입니다.
-
-```typescript
-interface LLMConfig {
-  model: string;
-  apiKey: string;
-  temperature?: number;
-  maxTokens?: number;
-}
-```
-
-### `LLMResponse`
-
-LLM 서비스의 응답을 정의하는 인터페이스입니다.
-
-```typescript
-interface LLMResponse {
-  text: string;
-  usage: {
-    promptTokens: number;
-    completionTokens: number;
-    totalTokens: number;
-  };
-}
-```
-
-### `Message`
-
-LLM 서비스와의 대화 메시지를 정의하는 인터페이스입니다.
-
-```typescript
-interface Message {
-  role: 'user' | 'assistant' | 'system';
-  content: Content;
-}
-```
-
-### `Content`
-
-메시지의 내용을 정의하는 인터페이스입니다.
-
-```typescript
-interface Content {
-  contentType: string;
-  value: string;
-}
-```
+이 프로젝트는 MIT 라이선스 하에 있습니다.

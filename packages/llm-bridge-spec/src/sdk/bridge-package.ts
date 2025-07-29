@@ -4,9 +4,13 @@ import { LlmManifest } from '../manifest/types';
 /**
  * 브릿지 패키지 구성 옵션
  */
-export interface BridgePackageOptions<TBridge extends LlmBridge, TConfig = unknown> {
+export interface BridgePackageOptions<
+  TBridge extends LlmBridge,
+  TConfig = unknown,
+  TConstructorArgs extends any[] = any[],
+> {
   /** 브릿지 클래스 */
-  bridge: new (...args: any[]) => TBridge;
+  bridge: new (...args: TConstructorArgs) => TBridge;
   /** 팩토리 함수 */
   factory: (config: TConfig) => TBridge;
   /** 매니페스트 */
@@ -18,8 +22,12 @@ export interface BridgePackageOptions<TBridge extends LlmBridge, TConfig = unkno
 /**
  * 확장된 브릿지 클래스 타입 (static 메서드 포함)
  */
-export interface EnhancedBridgeClass<TBridge extends LlmBridge, TConfig = unknown> {
-  new (...args: any[]): TBridge;
+export interface EnhancedBridgeClass<
+  TBridge extends LlmBridge,
+  TConfig = unknown,
+  TConstructorArgs extends any[] = any[],
+> {
+  new (...args: TConstructorArgs): TBridge;
   /** 매니페스트 함수 */
   manifest(): LlmManifest;
   /** 팩토리 함수 */
@@ -52,9 +60,13 @@ export interface EnhancedBridgeClass<TBridge extends LlmBridge, TConfig = unknow
  * const info = OpenAIBridge.manifest();
  * ```
  */
-export function createBridgePackage<TBridge extends LlmBridge, TConfig = unknown>(
-  options: BridgePackageOptions<TBridge, TConfig>
-): EnhancedBridgeClass<TBridge, TConfig> {
+export function createBridgePackage<
+  TBridge extends LlmBridge,
+  TConfig = unknown,
+  TConstructorArgs extends any[] = any[],
+>(
+  options: BridgePackageOptions<TBridge, TConfig, TConstructorArgs>
+): EnhancedBridgeClass<TBridge, TConfig, TConstructorArgs> {
   const { bridge: BridgeClass, factory, manifest, exports: additionalExports = {} } = options;
 
   // 브릿지 클래스에 static 메서드들을 추가
@@ -73,10 +85,14 @@ export function createBridgePackage<TBridge extends LlmBridge, TConfig = unknown
 /**
  * 브릿지 패키지 빌더 (메서드 체이닝 방식)
  */
-export class BridgePackageBuilder<TBridge extends LlmBridge, TConfig = unknown> {
-  private options: Partial<BridgePackageOptions<TBridge, TConfig>> = {};
+export class BridgePackageBuilder<
+  TBridge extends LlmBridge,
+  TConfig = unknown,
+  TConstructorArgs extends any[] = any[],
+> {
+  private options: Partial<BridgePackageOptions<TBridge, TConfig, TConstructorArgs>> = {};
 
-  constructor(bridge: new (...args: any[]) => TBridge) {
+  constructor(bridge: new (...args: TConstructorArgs) => TBridge) {
     this.options.bridge = bridge;
   }
 
@@ -107,20 +123,22 @@ export class BridgePackageBuilder<TBridge extends LlmBridge, TConfig = unknown> 
   /**
    * 브릿지 패키지 빌드
    */
-  build(): EnhancedBridgeClass<TBridge, TConfig> {
+  build(): EnhancedBridgeClass<TBridge, TConfig, TConstructorArgs> {
     if (!this.options.bridge || !this.options.factory || !this.options.manifest) {
       throw new Error('Bridge, factory, and manifest are required');
     }
 
-    return createBridgePackage(this.options as BridgePackageOptions<TBridge, TConfig>);
+    return createBridgePackage(
+      this.options as BridgePackageOptions<TBridge, TConfig, TConstructorArgs>
+    );
   }
 }
 
 /**
  * 브릿지 패키지 빌더 생성 헬퍼
  */
-export function bridgePackage<TBridge extends LlmBridge>(
-  bridge: new (...args: any[]) => TBridge
-): BridgePackageBuilder<TBridge> {
+export function bridgePackage<TBridge extends LlmBridge, TConstructorArgs extends any[] = any[]>(
+  bridge: new (...args: TConstructorArgs) => TBridge
+): BridgePackageBuilder<TBridge, unknown, TConstructorArgs> {
   return new BridgePackageBuilder(bridge);
 }
