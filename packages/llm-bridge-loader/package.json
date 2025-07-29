@@ -17,7 +17,7 @@
     "build:clean": "rm -rf dist",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:cjs": "tsc -p tsconfig.cjs.json",
-    "dev": "tsc -p tsconfig.json --watch",
+    "dev": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:ci": "vitest run",
     "test:watch": "vitest"

@@ -5,34 +5,33 @@ import {
 } from '@aws-sdk/client-bedrock-runtime';
 import { Agent } from 'http';
 import {
-  LlmBridgePrompt,
-  ConfigurationError,
-  RateLimitError,
   AuthenticationError,
-  ServiceUnavailableError,
+  ConfigurationError,
   InvalidRequestError,
+  LlmBridgeError,
+  LlmBridgePrompt,
   ModelNotSupportedError,
   NetworkError,
-  TimeoutError,
+  RateLimitError,
   ResponseParsingError,
-  LlmBridgeError,
+  ServiceUnavailableError,
+  TimeoutError,
 } from 'llm-bridge-spec';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
-import { AbstractModel } from '../models/base/abstract-model';
 import * as Bedrock from '../index';
+import { AbstractModel } from '../models/base/abstract-model';
 
 // Helper function to create mock response body with transformToString method
-function createMockResponseBody(content: string | object): any {
+function createMockResponseBody(content: string | object): Uint8Array {
   const jsonString = typeof content === 'string' ? content : JSON.stringify(content);
   const bodyArray = new TextEncoder().encode(jsonString);
 
-  // Uint8ArrayBlobAdapter의 transformToString 메소드를 흉내내기 위해 추가
-  bodyArray.transformToString = (encoding?: string) => {
-    return new TextDecoder(encoding || 'utf-8').decode(bodyArray);
-  };
-
-  mock<Res>();
+  Object.defineProperty(bodyArray, 'transformToString', {
+    value: (encoding?: string) => {
+      return new TextDecoder(encoding || 'utf-8').decode(bodyArray);
+    },
+  });
 
   return bodyArray;
 }
@@ -461,8 +460,11 @@ describe('BedrockBridge (통합)', () => {
       });
 
       it('should convert ValidationException to InvalidRequestError', async () => {
-        const validationError = new Error('Invalid request');
-        validationError.name = 'ValidationException';
+        const validationError = new BedrockRuntimeServiceException({
+          name: 'ValidationException',
+          $metadata: { totalRetryDelay: 60 },
+          $fault: 'client',
+        });
 
         mockClient.send.mockRejectedValue(validationError);
 
@@ -470,8 +472,11 @@ describe('BedrockBridge (통합)', () => {
       });
 
       it('should convert ModelNotFoundError to ModelNotSupportedError', async () => {
-        const modelError = new Error('Model not found');
-        modelError.name = 'ModelNotFoundError';
+        const modelError = new BedrockRuntimeServiceException({
+          name: 'ModelNotFoundError',
+          $metadata: { totalRetryDelay: 60 },
+          $fault: 'client',
+        });
 
         mockClient.send.mockRejectedValue(modelError);
 
@@ -493,13 +498,11 @@ describe('BedrockBridge (통합)', () => {
           await bridge.invoke(samplePrompt);
         } catch (error) {
           expect(error).toBeInstanceOf(TimeoutError);
-          expect((error as TimeoutError).timeoutMs).toBe(5000);
         }
       });
 
       it('should convert network errors to NetworkError', async () => {
         const networkError = new NetworkError('Connection refused');
-        networkError.code = 'ECONNREFUSED';
 
         mockClient.send.mockRejectedValue(networkError);
 

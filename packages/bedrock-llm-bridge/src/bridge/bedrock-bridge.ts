@@ -43,7 +43,7 @@ export class BedrockBridge implements LlmBridge {
   async *invokeStream(
     prompt: LlmBridgePrompt,
     option?: InvokeOption
-  ): AsyncIterable<LlmBridgeResponse> {
+  ): AsyncGenerator<LlmBridgeResponse, void, unknown> {
     try {
       const modelRequest = this.modelBridge.buildRequestBody(prompt, option);
 
