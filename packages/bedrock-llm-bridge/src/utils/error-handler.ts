@@ -1,3 +1,4 @@
+import { BedrockRuntimeServiceException } from '@aws-sdk/client-bedrock-runtime';
 import {
   LlmBridgeError,
   RateLimitError,
@@ -22,7 +23,7 @@ export function handleBedrockError(error: unknown, modelId: string, serviceName:
     throw error;
   }
 
-  if (!isNativeError(error)) {
+  if (!isNativeError(error) || !(error instanceof BedrockRuntimeServiceException)) {
     throw new LlmBridgeError('Unknown error occurred');
   }
 
@@ -33,8 +34,8 @@ export function handleBedrockError(error: unknown, modelId: string, serviceName:
   switch (errorName) {
     case 'ThrottlingException': {
       // Rate limit 에러
-      const metadata = (error as any).$metadata || {};
-      const retryAfter = metadata.totalRetryDelay || metadata.retryAfterHint || 60;
+      const metadata = error.$metadata || {};
+      const retryAfter = metadata.totalRetryDelay || 60;
       throw new RateLimitError(
         `${serviceName} API rate limit exceeded`,
         retryAfter,
@@ -57,8 +58,8 @@ export function handleBedrockError(error: unknown, modelId: string, serviceName:
     case 'ServiceUnavailableException':
     case 'InternalServerException': {
       // 서비스 이용 불가
-      const metadata = (error as any).$metadata || {};
-      const retryAfterService = metadata.totalRetryDelay || metadata.retryAfterHint;
+      const metadata = error.$metadata || {};
+      const retryAfterService = metadata.totalRetryDelay;
       throw new ServiceUnavailableError(
         `${serviceName} service temporarily unavailable`,
         retryAfterService,
@@ -87,10 +88,8 @@ export function handleBedrockError(error: unknown, modelId: string, serviceName:
     case 'TimeoutError':
     case 'AbortError': {
       // 타임아웃 에러
-      const metadata = (error as any).$metadata || {};
-      const timeout = (error as any).timeout;
-      const timeoutMs = timeout || metadata.totalRetryDelay || metadata.retryAfterHint || 30000;
-      throw new TimeoutError(timeoutMs, error);
+
+      throw new TimeoutError(undefined, error);
     }
 
     default: {
@@ -201,19 +200,13 @@ function parseZodError(error: unknown): string {
 
 function hasCode(error: unknown): error is { code: string } {
   return (
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    typeof (error as any).code === 'string'
+    typeof error === 'object' && error !== null && 'code' in error && typeof error.code === 'string'
   );
 }
 
 function hasName(error: unknown): error is { name: string } {
   return (
-    typeof error === 'object' &&
-    error !== null &&
-    'name' in error &&
-    typeof (error as any).name === 'string'
+    typeof error === 'object' && error !== null && 'name' in error && typeof error.name === 'string'
   );
 }
 
@@ -222,6 +215,6 @@ function hasMessage(error: unknown): error is { message: string } {
     typeof error === 'object' &&
     error !== null &&
     'message' in error &&
-    typeof (error as any).message === 'string'
+    typeof error.message === 'string'
   );
 }

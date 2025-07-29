@@ -1,4 +1,4 @@
-import { LlmBridgePrompt, LlmBridgeTool, StringContent } from 'llm-bridge-spec';
+import { LlmBridgePrompt, LlmBridgeTool } from 'llm-bridge-spec';
 import OpenAI from 'openai';
 import { describe, expect, it } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
@@ -42,7 +42,7 @@ describe('OpenAIBridge', () => {
         messages: [
           {
             role: 'user',
-            content: { contentType: 'text', value: 'Hello, world!' } as StringContent,
+            content: [{ contentType: 'text', value: 'Hello, world!' }],
           },
         ],
       };
@@ -91,7 +91,7 @@ describe('OpenAIBridge', () => {
         messages: [
           {
             role: 'user',
-            content: { contentType: 'text', value: 'What is the weather like?' } as StringContent,
+            content: [{ contentType: 'text', value: 'What is the weather like?' }],
           },
         ],
       };
@@ -161,7 +161,7 @@ describe('OpenAIBridge', () => {
         messages: [
           {
             role: 'user',
-            content: { contentType: 'text', value: 'Test' } as StringContent,
+            content: [{ contentType: 'text', value: 'Test' }],
           },
         ],
       };
@@ -320,7 +320,7 @@ describe('OpenAIBridge', () => {
     it('잘못된 모델 이름을 거부해야 함', () => {
       const invalidConfig = {
         apiKey: 'sk-test-key',
-        model: 'invalid-model' as any,
+        model: 'invalid-model',
       };
 
       const result = OpenAIConfigSchema.safeParse(invalidConfig);
@@ -336,7 +336,7 @@ describe('OpenAIBridge', () => {
         messages: [
           {
             role: 'user',
-            content: { contentType: 'text', value: 'Test' } as StringContent,
+            content: [{ contentType: 'text', value: 'Test' }],
           },
         ],
       };
@@ -354,7 +354,7 @@ describe('OpenAIBridge', () => {
         messages: [
           {
             role: 'user',
-            content: { contentType: 'text', value: 'Test' } as StringContent,
+            content: [{ contentType: 'text', value: 'Test' }],
           },
         ],
       };

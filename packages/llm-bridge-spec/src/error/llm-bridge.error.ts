@@ -195,10 +195,11 @@ export class ResponseParsingError extends LlmBridgeError {
  * 요청 타임아웃 시 발생하는 에러
  */
 export class TimeoutError extends LlmBridgeError {
-  public readonly timeoutMs: number;
+  public readonly timeoutMs?: number;
 
-  constructor(timeoutMs: number, cause?: Error) {
-    super(`Request timed out after ${timeoutMs}ms`, cause);
+  constructor(timeoutMs?: number, cause?: Error) {
+    const message = timeoutMs ? `Request timed out after ${timeoutMs}ms` : 'Request timed out';
+    super(message, cause);
     this.name = 'TimeoutError';
     this.timeoutMs = timeoutMs;
   }

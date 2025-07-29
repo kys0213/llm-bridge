@@ -46,8 +46,8 @@ export abstract class AbstractOllamaModel<TConfig extends OllamaBaseConfig = Oll
       .map(c => c.value);
 
     const images = message.content
-      .filter(c => MultiModalContentHelper.isImageContent(c) && c.value instanceof Buffer)
-      .map(c => c.value.toString('base64'));
+      .filter(c => MultiModalContentHelper.isImageContent(c))
+      .map(c => (c.value instanceof Buffer ? c.value.toString('base64') : ''));
 
     return {
       role: message.role,

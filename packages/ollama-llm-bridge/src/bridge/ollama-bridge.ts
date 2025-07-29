@@ -88,7 +88,7 @@ export class OllamaBridge implements LlmBridge {
    * 메타데이터 반환
    */
   async getMetadata(): Promise<LlmMetadata> {
-    return await this.model.getMetadata();
+    return this.model.getMetadata();
   }
 
   /**

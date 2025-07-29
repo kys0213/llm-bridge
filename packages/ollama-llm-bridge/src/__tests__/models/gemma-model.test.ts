@@ -61,12 +61,22 @@ describe('GemmaModel', () => {
   describe('getCapabilities', () => {
     it('should return model capabilities', () => {
       const capabilities = gemmaModel.getCapabilities();
-      expect(capabilities.streaming).toBe(true);
-      expect(capabilities.multiModal).toBe(false); // Gemma는 현재 멀티모달 지원 안함
-      expect(capabilities.functionCalling).toBe(false); // Gemma는 현재 function calling 지원 안함
-      expect(capabilities.maxTokens).toBeGreaterThan(0);
-      expect(capabilities.supportedLanguages).toContain('ko');
-      expect(capabilities.supportedLanguages).toContain('en');
+      expect(capabilities).toMatchInlineSnapshot(`
+        {
+          "modalities": [
+            "text",
+            "image",
+            "audio",
+            "video",
+            "file",
+          ],
+          "supportsFunctionCall": true,
+          "supportsMultiTurn": true,
+          "supportsStreaming": true,
+          "supportsToolCall": true,
+          "supportsVision": true,
+        }
+      `);
     });
   });
 
@@ -82,13 +92,13 @@ describe('GemmaModel', () => {
   describe('model size detection', () => {
     it('should detect 2b model size', () => {
       const gemma2bModel = new GemmaModel('gemma3n:2b');
-      const capabilities = gemma2bModel.getCapabilities();
+      const capabilities = gemma2bModel.getMetadata();
       expect(capabilities.maxTokens).toBe(1024);
     });
 
     it('should detect 7b model size', () => {
       const gemma7bModel = new GemmaModel('gemma3n:7b');
-      const capabilities = gemma7bModel.getCapabilities();
+      const capabilities = gemma7bModel.getMetadata();
       expect(capabilities.maxTokens).toBe(2048);
     });
   });

@@ -54,22 +54,55 @@ describe('LlamaModel', () => {
   describe('getCapabilities', () => {
     it('should return model capabilities', () => {
       const capabilities = llamaModel.getCapabilities();
-      expect(capabilities.streaming).toBe(true);
-      expect(capabilities.maxTokens).toBeGreaterThan(0);
-      expect(capabilities.supportedLanguages).toContain('ko');
-      expect(capabilities.supportedLanguages).toContain('en');
+      expect(capabilities).toMatchInlineSnapshot(`
+        {
+          "modalities": [
+            "text",
+            "image",
+          ],
+          "supportsFunctionCall": true,
+          "supportsMultiTurn": false,
+          "supportsStreaming": true,
+          "supportsToolCall": true,
+          "supportsVision": false,
+        }
+      `);
     });
 
     it('should support multiModal for llama3.2', () => {
       const llama32Model = new LlamaModel('llama3.2');
       const capabilities = llama32Model.getCapabilities();
-      expect(capabilities.multiModal).toBe(true);
+      expect(capabilities).toMatchInlineSnapshot(`
+        {
+          "modalities": [
+            "text",
+            "image",
+          ],
+          "supportsFunctionCall": true,
+          "supportsMultiTurn": false,
+          "supportsStreaming": true,
+          "supportsToolCall": true,
+          "supportsVision": false,
+        }
+      `);
     });
 
     it('should not support multiModal for older models', () => {
       const llama3Model = new LlamaModel('llama3');
       const capabilities = llama3Model.getCapabilities();
-      expect(capabilities.multiModal).toBe(false);
+      expect(capabilities).toMatchInlineSnapshot(`
+        {
+          "modalities": [
+            "text",
+            "image",
+          ],
+          "supportsFunctionCall": true,
+          "supportsMultiTurn": false,
+          "supportsStreaming": true,
+          "supportsToolCall": true,
+          "supportsVision": false,
+        }
+      `);
     });
   });
 

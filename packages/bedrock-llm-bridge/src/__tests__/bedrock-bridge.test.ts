@@ -1,4 +1,8 @@
-import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
+import {
+  BedrockRuntimeClient,
+  BedrockRuntimeServiceException,
+  InvokeModelCommand,
+} from '@aws-sdk/client-bedrock-runtime';
 import { Agent } from 'http';
 import {
   LlmBridgePrompt,
@@ -24,9 +28,11 @@ function createMockResponseBody(content: string | object): any {
   const bodyArray = new TextEncoder().encode(jsonString);
 
   // Uint8ArrayBlobAdapter의 transformToString 메소드를 흉내내기 위해 추가
-  (bodyArray as any).transformToString = (encoding?: string) => {
+  bodyArray.transformToString = (encoding?: string) => {
     return new TextDecoder(encoding || 'utf-8').decode(bodyArray);
   };
+
+  mock<Res>();
 
   return bodyArray;
 }
@@ -117,7 +123,7 @@ describe('BedrockBridge (통합)', () => {
           messages: [
             {
               role: 'user',
-              content: { contentType: 'text', value: 'Hello!' },
+              content: [{ contentType: 'text', value: 'Hello!' }],
             },
           ],
         };
@@ -164,7 +170,7 @@ describe('BedrockBridge (통합)', () => {
           messages: [
             {
               role: 'user',
-              content: { contentType: 'text', value: 'Hello!' },
+              content: [{ contentType: 'text', value: 'Hello!' }],
             },
           ],
         };
@@ -281,7 +287,7 @@ describe('BedrockBridge (통합)', () => {
           messages: [
             {
               role: 'user',
-              content: { contentType: 'text', value: 'Test' },
+              content: [{ contentType: 'text', value: 'Test' }],
             },
           ],
         };
@@ -311,7 +317,7 @@ describe('BedrockBridge (통합)', () => {
           messages: [
             {
               role: 'user',
-              content: { contentType: 'text', value: 'Test' },
+              content: [{ contentType: 'text', value: 'Test' }],
             },
           ],
         };
@@ -399,15 +405,17 @@ describe('BedrockBridge (통합)', () => {
         messages: [
           {
             role: 'user',
-            content: { contentType: 'text', value: 'test' },
+            content: [{ contentType: 'text', value: 'test' }],
           },
         ],
       };
 
       it('should convert ThrottlingException to RateLimitError', async () => {
-        const throttlingError = new Error('Throttling error');
-        throttlingError.name = 'ThrottlingException';
-        (throttlingError as any).$metadata = { retryAfterHint: 30 };
+        const throttlingError = new BedrockRuntimeServiceException({
+          name: 'ThrottlingException',
+          $metadata: { totalRetryDelay: 30 },
+          $fault: 'client',
+        });
 
         mockClient.send.mockRejectedValue(throttlingError);
 
@@ -422,8 +430,11 @@ describe('BedrockBridge (통합)', () => {
       });
 
       it('should convert UnauthorizedException to AuthenticationError', async () => {
-        const authError = new Error('Unauthorized');
-        authError.name = 'UnauthorizedException';
+        const authError = new BedrockRuntimeServiceException({
+          name: 'UnauthorizedException',
+          $metadata: { totalRetryDelay: 60 },
+          $fault: 'client',
+        });
 
         mockClient.send.mockRejectedValue(authError);
 
@@ -431,9 +442,11 @@ describe('BedrockBridge (통합)', () => {
       });
 
       it('should convert ServiceUnavailableException to ServiceUnavailableError', async () => {
-        const serviceError = new Error('Service unavailable');
-        serviceError.name = 'ServiceUnavailableException';
-        (serviceError as any).$metadata = { retryAfterHint: 60 };
+        const serviceError = new BedrockRuntimeServiceException({
+          name: 'ServiceUnavailableException',
+          $metadata: { totalRetryDelay: 60 },
+          $fault: 'server',
+        });
 
         mockClient.send.mockRejectedValue(serviceError);
 
@@ -466,9 +479,11 @@ describe('BedrockBridge (통합)', () => {
       });
 
       it('should convert TimeoutError to TimeoutError', async () => {
-        const timeoutError = new Error('Request timeout');
-        timeoutError.name = 'TimeoutError';
-        (timeoutError as any).timeout = 5000;
+        const timeoutError = new BedrockRuntimeServiceException({
+          name: 'TimeoutError',
+          $metadata: { totalRetryDelay: 5000 },
+          $fault: 'client',
+        });
 
         mockClient.send.mockRejectedValue(timeoutError);
 
@@ -483,8 +498,8 @@ describe('BedrockBridge (통합)', () => {
       });
 
       it('should convert network errors to NetworkError', async () => {
-        const networkError = new Error('Connection refused');
-        (networkError as any).code = 'ECONNREFUSED';
+        const networkError = new NetworkError('Connection refused');
+        networkError.code = 'ECONNREFUSED';
 
         mockClient.send.mockRejectedValue(networkError);
 
@@ -506,7 +521,7 @@ describe('BedrockBridge (통합)', () => {
         messages: [
           {
             role: 'user',
-            content: { contentType: 'text', value: 'test' },
+            content: [{ contentType: 'text', value: 'test' }],
           },
         ],
       };
@@ -552,14 +567,17 @@ describe('BedrockBridge (통합)', () => {
         messages: [
           {
             role: 'user',
-            content: { contentType: 'text', value: 'test stream' },
+            content: [{ contentType: 'text', value: 'test stream' }],
           },
         ],
       };
 
       it('should handle stream initialization errors', async () => {
-        const streamError = new Error('Stream init failed');
-        streamError.name = 'ThrottlingException';
+        const streamError = new BedrockRuntimeServiceException({
+          name: 'ThrottlingException',
+          $metadata: { totalRetryDelay: 30 },
+          $fault: 'client',
+        });
 
         mockClient.send.mockRejectedValue(streamError);
 
@@ -587,9 +605,11 @@ describe('BedrockBridge (통합)', () => {
 
     describe('에러 전파', () => {
       it('should preserve original error chain', async () => {
-        const originalError = new Error('Original AWS error');
-        originalError.name = 'ThrottlingException';
-        (originalError as any).$metadata = { retryAfterHint: 60 };
+        const originalError = new BedrockRuntimeServiceException({
+          name: 'ThrottlingException',
+          $metadata: { totalRetryDelay: 60 },
+          $fault: 'client',
+        });
 
         mockClient.send.mockRejectedValue(originalError);
 
@@ -597,7 +617,7 @@ describe('BedrockBridge (통합)', () => {
           messages: [
             {
               role: 'user',
-              content: { contentType: 'text', value: 'test' },
+              content: [{ contentType: 'text', value: 'test' }],
             },
           ],
         };

@@ -10,5 +10,5 @@
     "sourceMap": true
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.e2e.test.ts", "node_modules", "dist", "esm"]
+  "exclude": ["node_modules", "dist", "esm"]
 }

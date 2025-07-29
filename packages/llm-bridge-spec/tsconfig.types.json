@@ -5,7 +5,5 @@
     "rootDir": "./src",
     "declaration": true,
     "emitDeclarationOnly": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  }
 }

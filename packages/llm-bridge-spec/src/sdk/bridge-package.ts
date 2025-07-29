@@ -25,7 +25,7 @@ export interface BridgePackageOptions<
 export interface EnhancedBridgeClass<
   TBridge extends LlmBridge,
   TConfig = unknown,
-  TConstructorArgs extends any[] = any[],
+  TConstructorArgs extends unknown[] = unknown[],
 > {
   new (...args: TConstructorArgs): TBridge;
   /** 매니페스트 함수 */
@@ -33,7 +33,7 @@ export interface EnhancedBridgeClass<
   /** 팩토리 함수 */
   create(config: TConfig): TBridge;
   /** 추가 속성들 */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -70,16 +70,24 @@ export function createBridgePackage<
   const { bridge: BridgeClass, factory, manifest, exports: additionalExports = {} } = options;
 
   // 브릿지 클래스에 static 메서드들을 추가
-  const EnhancedBridge = BridgeClass as any;
 
-  // Static 메서드 추가
-  EnhancedBridge.manifest = () => manifest;
-  EnhancedBridge.create = factory;
+  Object.defineProperties(BridgeClass, {
+    manifest: {
+      value: () => manifest,
+    },
+    create: {
+      value: factory,
+    },
+  });
+
+  Object.entries(additionalExports).forEach(([key, value]) => {
+    Object.defineProperty(BridgeClass, key, {
+      value,
+    });
+  });
 
   // 추가 exports를 static 속성으로 추가
-  Object.assign(EnhancedBridge, additionalExports);
-
-  return EnhancedBridge;
+  return BridgeClass as EnhancedBridgeClass<TBridge, TConfig, TConstructorArgs>;
 }
 
 /**
