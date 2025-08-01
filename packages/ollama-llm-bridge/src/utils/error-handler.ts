@@ -19,7 +19,36 @@ function hasCause(error: unknown): error is { cause: unknown } {
 }
 
 function hasErrorCode(obj: unknown): obj is { code: string } {
-  return typeof obj === 'object' && obj !== null && 'code' in obj;
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'code' in obj &&
+    typeof (obj as Record<string, unknown>).code === 'string'
+  );
+}
+
+/**
+ * 에러가 특정 타입으로 래핑되어 있는지 확인하는 Type Guard
+ */
+export function isWrappedError<T extends Error>(
+  error: unknown,
+  errorConstructor: new (...args: unknown[]) => T
+): error is Error & { cause: T } {
+  return error instanceof Error && hasCause(error) && error.cause instanceof errorConstructor;
+}
+
+/**
+ * ConfigurationError에 래핑된 특정 에러 타입을 확인하는 헬퍼
+ */
+export function isConfigurationErrorWithCause<T extends Error>(
+  error: unknown,
+  causeConstructor: new (...args: unknown[]) => T
+): error is ConfigurationError & { cause: T } {
+  return (
+    error instanceof ConfigurationError &&
+    hasCause(error) &&
+    error.cause instanceof causeConstructor
+  );
 }
 
 function isFetchError(error: unknown): error is TypeError & { message: string; name: string } {
@@ -126,6 +155,11 @@ export function handleFactoryError(error: unknown): never {
       `Configuration validation failed: ${fieldErrors.join(', ')}`,
       error
     );
+  }
+
+  // ModelNotSupportedError는 직접 re-throw (래핑하지 않음)
+  if (error instanceof ModelNotSupportedError) {
+    throw error;
   }
 
   if (error instanceof Error) {

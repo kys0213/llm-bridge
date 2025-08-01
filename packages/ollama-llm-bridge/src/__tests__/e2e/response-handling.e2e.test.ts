@@ -6,13 +6,21 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { InvalidRequestError, ResponseParsingError, TimeoutError, APIError } from 'llm-bridge-spec';
 
+import { OllamaBridge } from '../../bridge/ollama-bridge';
+import { setupE2ETest, createTestBridge, createSimplePrompt, TEST_CONFIG } from './test-utils';
+
 // fail 함수 정의
 function fail(message: string): never {
   throw new Error(message);
 }
-import { OllamaBridge } from '../../bridge/ollama-bridge';
-import { setupE2ETest, createTestBridge, createSimplePrompt, TEST_CONFIG } from './test-utils';
 
+// Type guard 헬퍼 함수
+function isErrorOfType<T extends Error>(
+  error: unknown,
+  errorType: new (...args: any[]) => T
+): error is T {
+  return error instanceof errorType;
+}
 describe('Response Handling E2E Tests', () => {
   let bridge: OllamaBridge;
 
@@ -45,8 +53,8 @@ describe('Response Handling E2E Tests', () => {
           fail('Expected InvalidRequestError to be thrown');
         } catch (error) {
           // 빈 메시지 배열은 InvalidRequestError나 APIError로 처리될 수 있음
-          expect(error).toSatisfy(
-            (err: any) => err instanceof InvalidRequestError || err instanceof APIError
+          expect(isErrorOfType(error, InvalidRequestError) || isErrorOfType(error, APIError)).toBe(
+            true
           );
 
           console.log('Empty messages error:', error);
@@ -210,7 +218,7 @@ describe('Response Handling E2E Tests', () => {
         }
 
         console.log('Response validation passed:', {
-          contentLength: response.content.value.length,
+          contentLength: (response.content.value as string).length,
           hasUsage: !!response.usage,
           usage: response.usage,
         });

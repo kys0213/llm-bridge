@@ -108,7 +108,7 @@ describe('Model Validation E2E Tests', () => {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: unsupportedModel,
         });
-        fail('Expected ModelNotSupportedError to be thrown');
+        expect.fail('Expected ModelNotSupportedError to be thrown');
       } catch (error) {
         expect(error).toBeInstanceOf(ModelNotSupportedError);
         const modelError = error as ModelNotSupportedError;
@@ -126,7 +126,7 @@ describe('Model Validation E2E Tests', () => {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: 'claude-3',
         });
-        fail('Expected ModelNotSupportedError to be thrown');
+        expect.fail('Expected ModelNotSupportedError to be thrown');
       } catch (error) {
         expect(error).toBeInstanceOf(ModelNotSupportedError);
         const modelError = error as ModelNotSupportedError;
@@ -270,7 +270,7 @@ describe('Model Validation E2E Tests', () => {
 
             try {
               await testBridge.invoke(createSimplePrompt('Hello'));
-              fail(`Expected error for unavailable model ${testModel}`);
+              expect.fail(`Expected error for unavailable model ${testModel}`);
             } catch (error) {
               // 에러 메시지에 모델 관련 정보가 있어야 함
               const errorMessage = (error as Error).message.toLowerCase();
@@ -357,7 +357,7 @@ describe('Model Validation E2E Tests', () => {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: 'llama4', // 존재하지 않는 버전
         });
-        fail('Expected ModelNotSupportedError to be thrown');
+        expect.fail('Expected ModelNotSupportedError to be thrown');
       } catch (error) {
         expect(error).toBeInstanceOf(ModelNotSupportedError);
         const modelError = error as ModelNotSupportedError;
@@ -376,7 +376,7 @@ describe('Model Validation E2E Tests', () => {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: 'gpt-4',
         });
-        fail('Expected ModelNotSupportedError to be thrown');
+        expect.fail('Expected ModelNotSupportedError to be thrown');
       } catch (error) {
         expect(error).toBeInstanceOf(ModelNotSupportedError);
         const modelError = error as ModelNotSupportedError;

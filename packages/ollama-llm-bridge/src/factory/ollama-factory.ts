@@ -8,6 +8,11 @@ import { handleFactoryError, validateModel } from '../utils/error-handler';
  */
 export function createOllamaBridge(config: OllamaBaseConfig): OllamaBridge {
   try {
+    // null 또는 undefined 체크
+    if (!config) {
+      throw new Error('Configuration is required');
+    }
+
     // 설정 검증
     const validatedConfig = OllamaBaseConfigSchema.parse(config);
 
@@ -35,7 +40,6 @@ export function createDefaultOllamaBridge(overrides?: Partial<OllamaBaseConfig>)
     model: 'llama3.2',
     temperature: 0.7,
     num_predict: 4096,
-    stream: false,
     ...overrides,
   };
 
@@ -51,7 +55,6 @@ export function createLlamaBridge(config?: Partial<OllamaBaseConfig>): OllamaBri
     model: 'llama3.2',
     temperature: 0.7,
     num_predict: 4096,
-    stream: false,
     ...config,
   };
 
@@ -67,7 +70,6 @@ export function createGemmaBridge(config?: Partial<OllamaBaseConfig>): OllamaBri
     model: 'gemma3n:latest',
     temperature: 0.7,
     num_predict: 2048,
-    stream: false,
     ...config,
   };
 

@@ -267,7 +267,7 @@ describe('Network Error E2E Tests', () => {
           );
 
           console.log(`Network timeout test completed in ${elapsedMs}ms`);
-          console.log('Error type:', error.constructor.name);
+          console.log('Error type:', (error as Error).constructor.name);
         }
       },
       TEST_CONFIG.TEST_TIMEOUT
