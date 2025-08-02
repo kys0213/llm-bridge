@@ -22,20 +22,6 @@ function hasErrorCode(obj: unknown): obj is { code: string } {
   return typeof obj === 'object' && obj !== null && 'code' in obj && typeof obj.code === 'string';
 }
 
-/**
- * ConfigurationError에 래핑된 특정 에러 타입을 확인하는 헬퍼
- */
-export function isConfigurationErrorWithCause<T extends Error>(
-  error: unknown,
-  causeConstructor: new (...args: unknown[]) => T
-): error is ConfigurationError & { cause: T } {
-  return (
-    error instanceof ConfigurationError &&
-    hasCause(error) &&
-    error.cause instanceof causeConstructor
-  );
-}
-
 function isFetchError(error: unknown): error is TypeError & { message: string; name: string } {
   return error instanceof TypeError && error.name === 'TypeError' && 'message' in error;
 }
