@@ -4,7 +4,14 @@
  */
 
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
-import { InvalidRequestError, ResponseParsingError, TimeoutError, APIError } from 'llm-bridge-spec';
+import {
+  InvalidRequestError,
+  ResponseParsingError,
+  TimeoutError,
+  APIError,
+  Message,
+  LlmBridgePrompt,
+} from 'llm-bridge-spec';
 
 import { OllamaBridge } from '../../bridge/ollama-bridge';
 import { setupE2ETest, createTestBridge, createSimplePrompt, TEST_CONFIG } from './test-utils';
@@ -66,14 +73,14 @@ describe('Response Handling E2E Tests', () => {
     it(
       'should throw InvalidRequestError for malformed message content',
       async () => {
-        const invalidPrompts = [
+        const invalidPrompts: LlmBridgePrompt[] = [
           // content가 없는 메시지
           {
             messages: [
               {
                 role: 'user' as const,
                 // content 누락
-              } as any,
+              } as unknown as Message,
             ],
           },
           // 잘못된 content 타입
@@ -81,20 +88,20 @@ describe('Response Handling E2E Tests', () => {
             messages: [
               {
                 role: 'user' as const,
-                content: 'string instead of object' as any,
-              },
+                content: 'string instead of object' as unknown as object,
+              } as unknown as Message,
             ],
           },
           // 잘못된 role
           {
             messages: [
               {
-                role: 'invalid_role' as any,
+                role: 'invalid_role' as unknown as 'user' | 'assistant' | 'system' | 'tool',
                 content: {
-                  contentType: 'text' as const,
+                  contentType: 'text' as 'text' | 'image' | 'audio' | 'video',
                   value: 'Hello',
                 },
-              },
+              } as unknown as Message,
             ],
           },
         ];
@@ -106,7 +113,7 @@ describe('Response Handling E2E Tests', () => {
             console.log('Malformed request was accepted:', invalidPrompt);
           } catch (error) {
             expect(error).toSatisfy(
-              (err: any) =>
+              (err: unknown) =>
                 err instanceof InvalidRequestError ||
                 err instanceof APIError ||
                 err instanceof TypeError // 타입 에러도 가능
@@ -131,8 +138,8 @@ describe('Response Handling E2E Tests', () => {
           // 음수 maxTokens
           { maxTokens: -100 },
           // 잘못된 타입
-          { temperature: 'invalid' as any },
-          { maxTokens: 'invalid' as any },
+          { temperature: 'invalid' as unknown as number },
+          { maxTokens: 'invalid' as unknown as number },
         ];
 
         for (const invalidOption of invalidOptions) {
@@ -141,7 +148,7 @@ describe('Response Handling E2E Tests', () => {
             console.log('Invalid option was accepted:', invalidOption);
           } catch (error) {
             expect(error).toSatisfy(
-              (err: any) => err instanceof InvalidRequestError || err instanceof APIError
+              (err: unknown) => err instanceof InvalidRequestError || err instanceof APIError
             );
 
             console.log('Invalid option error:', invalidOption, error);
@@ -407,7 +414,7 @@ describe('Response Handling E2E Tests', () => {
 
             // 알려진 에러 타입이어야 함
             expect(error).toSatisfy(
-              (err: any) =>
+              (err: unknown) =>
                 err instanceof InvalidRequestError ||
                 err instanceof ResponseParsingError ||
                 err instanceof TimeoutError ||
@@ -432,7 +439,7 @@ describe('Response Handling E2E Tests', () => {
         try {
           // 에러를 유발할 수 있는 요청
           await bridge.invoke({
-            messages: [] as any,
+            messages: [] as unknown as Message[],
           });
         } catch (error) {
           // 에러가 발생해도 브릿지 상태는 유지되어야 함
@@ -450,7 +457,7 @@ describe('Response Handling E2E Tests', () => {
       'should provide consistent error behavior across invocations',
       async () => {
         const invalidPrompt = {
-          messages: [] as any,
+          messages: [] as unknown as Message[],
         };
 
         const errors: Error[] = [];
