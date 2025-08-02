@@ -6,7 +6,6 @@ import { Ollama } from 'ollama';
 import { OllamaBridge } from '../../bridge/ollama-bridge';
 import { createOllamaBridge } from '../../factory/ollama-factory';
 import { OllamaBaseConfig } from '../../types/config';
-import { isWrappedError, isConfigurationErrorWithCause } from '../../utils/error-handler';
 
 // 테스트 환경 변수
 export const TEST_CONFIG = {
@@ -263,8 +262,3 @@ export function getInvalidHost(): string {
 export function getUnusedPort(): string {
   return 'http://localhost:99999';
 }
-
-/**
- * 테스트용 에러 타입 체크 헬퍼 함수들 (다시 export)
- */
-export { isWrappedError, isConfigurationErrorWithCause };
