@@ -19,7 +19,7 @@ function hasCause(error: unknown): error is { cause: unknown } {
 }
 
 function hasErrorCode(obj: unknown): obj is { code: string } {
-  return typeof obj === 'object' && obj !== null && 'code' in obj;
+  return typeof obj === 'object' && obj !== null && 'code' in obj && typeof obj.code === 'string';
 }
 
 function isFetchError(error: unknown): error is TypeError & { message: string; name: string } {
@@ -126,6 +126,11 @@ export function handleFactoryError(error: unknown): never {
       `Configuration validation failed: ${fieldErrors.join(', ')}`,
       error
     );
+  }
+
+  // ModelNotSupportedError는 직접 re-throw (래핑하지 않음)
+  if (error instanceof ModelNotSupportedError) {
+    throw error;
   }
 
   if (error instanceof Error) {
