@@ -19,22 +19,7 @@ function hasCause(error: unknown): error is { cause: unknown } {
 }
 
 function hasErrorCode(obj: unknown): obj is { code: string } {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'code' in obj &&
-    typeof (obj as Record<string, unknown>).code === 'string'
-  );
-}
-
-/**
- * 에러가 특정 타입으로 래핑되어 있는지 확인하는 Type Guard
- */
-export function isWrappedError<T extends Error>(
-  error: unknown,
-  errorConstructor: new (...args: unknown[]) => T
-): error is Error & { cause: T } {
-  return error instanceof Error && hasCause(error) && error.cause instanceof errorConstructor;
+  return typeof obj === 'object' && obj !== null && 'code' in obj && typeof obj.code === 'string';
 }
 
 /**
