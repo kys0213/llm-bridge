@@ -15,13 +15,13 @@ Universal Ollama LLM Bridge supporting multiple models (Llama, Gemma, etc.) with
 ## 📦 Installation
 
 ```bash
-# Using pnpm (recommended)
+# pnpm (권장)
 pnpm add ollama-llm-bridge llm-bridge-spec ollama zod
 
-# Using npm
+# npm
 npm install ollama-llm-bridge llm-bridge-spec ollama zod
 
-# Using yarn
+# yarn
 yarn add ollama-llm-bridge llm-bridge-spec ollama zod
 ```
 
@@ -261,13 +261,22 @@ pnpm test:e2e
 - [ ] Custom Model Plugins
 - [ ] Performance Optimizations
 
-## 🤝 Contributing
+## 🤝 기여하기
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+이 프로젝트는 [Git Workflow Guide](../../docs/GIT_WORKFLOW_GUIDE.md)를 따릅니다.
+
+1. **Issues**: 새로운 기능이나 버그 리포트를 GitHub Issues에 등록
+2. **브랜치 생성**: `git checkout -b feature/core-new-feature`
+3. **TODO 기반 개발**: 각 작업을 TODO 단위로 커밋
+   ```bash
+   git commit -m "✅ [TODO 1/3] Add new model support"
+   ```
+4. **품질 체크**: 커밋 전 반드시 확인
+   ```bash
+   pnpm lint && pnpm test:ci && pnpm build
+   ```
+5. **PR 생성**: GitHub에서 Pull Request 생성
+6. **코드 리뷰**: 승인 후 Squash Merge
 
 ## 📄 License
 
