@@ -48,14 +48,14 @@ LLM 서비스의 스펙, 타입, 그리고 공통 에러 클래스를 정의하�
 ## 📦 설치
 
 ```bash
+# pnpm (권장)
+pnpm add llm-bridge-spec
+
 # npm
 npm install llm-bridge-spec
 
 # yarn
 yarn add llm-bridge-spec
-
-# pnpm
-pnpm add llm-bridge-spec
 ```
 
 ## 🧩 인터페이스 명세
@@ -383,11 +383,20 @@ function logError(error: Error, context: any) {
 
 ## 🤝 기여하기
 
-1. 이슈 생성
-2. 브랜치 생성 (`git checkout -b feature/amazing-feature`)
-3. 변경사항 커밋 (`git commit -m 'Add some amazing feature'`)
-4. 브랜치에 푸시 (`git push origin feature/amazing-feature`)
-5. Pull Request 생성
+이 프로젝트는 [Git Workflow Guide](../../docs/GIT_WORKFLOW_GUIDE.md)를 따릅니다.
+
+1. **Issues**: 새로운 기능이나 버그 리포트를 GitHub Issues에 등록
+2. **브랜치 생성**: `git checkout -b feature/core-new-feature`
+3. **TODO 기반 개발**: 각 작업을 TODO 단위로 커밋
+   ```bash
+   git commit -m "✅ [TODO 1/3] Add new interface definition"
+   ```
+4. **품질 체크**: 커밋 전 반드시 확인
+   ```bash
+   pnpm lint && pnpm test:ci && pnpm build
+   ```
+5. **PR 생성**: GitHub에서 Pull Request 생성
+6. **코드 리뷰**: 승인 후 Squash Merge
 
 ## 📄 라이선스
 
