@@ -62,6 +62,7 @@ Bridges use peer dependencies for their respective SDKs
 **🚨 Critical Rule: NEVER merge directly to main locally! Always use PR.**
 
 **Branch Strategy:**
+
 - `feature/ux-*` - UX improvements and user interface features
 - `feature/component-*` - Component development
 - `feature/core-*` - Core logic and functionality
@@ -70,6 +71,7 @@ Bridges use peer dependencies for their respective SDKs
 - `refactor/*` - Code refactoring
 
 **Commit Guidelines:**
+
 - `✅ [TODO x/y] Description` - TODO completion
 - `🚧 [TODO x/y] WIP: Description` - Work in progress
 - `🎉 [FEATURE] Description` - Feature completion
@@ -284,6 +286,7 @@ pnpm lint && pnpm test:ci && git commit -m "✅ [TODO x/5] Description"
 ```
 
 **Complete workflow:**
+
 ```bash
 git checkout -b feature/core-new-capability
 # Work on TODOs 1-5 with separate commits
