@@ -71,7 +71,7 @@ for await (const chunk of stream) {
 const response = await bridge.invoke(
   {
     messages: [
-      { role: 'user', content: [{ type: 'text', text: 'What\'s the weather like in Seoul?' }] },
+      { role: 'user', content: [{ type: 'text', text: "What's the weather like in Seoul?" }] },
     ],
   },
   {
@@ -108,8 +108,8 @@ if (response.toolCalls) {
 import { createOpenAIBridge } from 'openai-llm-bridge';
 
 const bridge = createOpenAIBridge({
-  apiKey: process.env.OPENAI_API_KEY,  // Required
-  model: 'gpt-4',                      // Required
+  apiKey: process.env.OPENAI_API_KEY, // Required
+  model: 'gpt-4', // Required
   temperature: 0.7,
   maxTokens: 1000,
   topP: 1.0,
@@ -121,11 +121,7 @@ const bridge = createOpenAIBridge({
 ### Convenience Factories
 
 ```typescript
-import { 
-  createGPT4Bridge, 
-  createGPT35Bridge, 
-  createDefaultOpenAIBridge 
-} from 'openai-llm-bridge';
+import { createGPT4Bridge, createGPT35Bridge, createDefaultOpenAIBridge } from 'openai-llm-bridge';
 
 // GPT-4 with defaults
 const gpt4Bridge = createGPT4Bridge({
@@ -166,18 +162,18 @@ const defaultBridge = createDefaultOpenAIBridge({
 
 ```typescript
 interface OpenAIConfig {
-  apiKey: string;           // OpenAI API key (required)
-  model: string;            // Model name (required)
-  temperature?: number;     // 0.0 - 2.0
-  maxTokens?: number;       // Maximum tokens to generate
-  topP?: number;           // 0.0 - 1.0
+  apiKey: string; // OpenAI API key (required)
+  model: string; // Model name (required)
+  temperature?: number; // 0.0 - 2.0
+  maxTokens?: number; // Maximum tokens to generate
+  topP?: number; // 0.0 - 1.0
   frequencyPenalty?: number; // -2.0 - 2.0
-  presencePenalty?: number;  // -2.0 - 2.0
-  stopSequence?: string[];   // Stop sequences
+  presencePenalty?: number; // -2.0 - 2.0
+  stopSequence?: string[]; // Stop sequences
   logitBias?: Record<string, number>; // Token bias
-  user?: string;            // User identifier
-  baseURL?: string;         // Custom API base URL
-  organization?: string;    // OpenAI organization ID
+  user?: string; // User identifier
+  baseURL?: string; // Custom API base URL
+  organization?: string; // OpenAI organization ID
 }
 ```
 
@@ -199,9 +195,9 @@ console.log(metadata);
 
 // Check specific capabilities
 const manifest = bridge.getManifest();
-console.log(manifest.capabilities.supportsToolCall);     // true
-console.log(manifest.capabilities.supportsStreaming);    // true
-console.log(manifest.capabilities.supportsVision);       // depends on model
+console.log(manifest.capabilities.supportsToolCall); // true
+console.log(manifest.capabilities.supportsStreaming); // true
+console.log(manifest.capabilities.supportsVision); // depends on model
 ```
 
 ## 🚦 Error Handling
@@ -209,12 +205,12 @@ console.log(manifest.capabilities.supportsVision);       // depends on model
 The bridge provides comprehensive error handling with standardized error types:
 
 ```typescript
-import { 
+import {
   RateLimitError,
-  QuotaExceededError, 
+  QuotaExceededError,
   AuthenticationError,
   InvalidRequestError,
-  ServiceUnavailableError
+  ServiceUnavailableError,
 } from 'llm-bridge-spec';
 
 try {
@@ -244,10 +240,10 @@ if (response.usage) {
   console.log('Prompt tokens:', response.usage.promptTokens);
   console.log('Completion tokens:', response.usage.completionTokens);
   console.log('Total tokens:', response.usage.totalTokens);
-  
+
   // Calculate approximate cost (example rates)
-  const promptCost = response.usage.promptTokens * 0.03 / 1000;  // $0.03 per 1K tokens
-  const completionCost = response.usage.completionTokens * 0.06 / 1000;  // $0.06 per 1K tokens
+  const promptCost = (response.usage.promptTokens * 0.03) / 1000; // $0.03 per 1K tokens
+  const completionCost = (response.usage.completionTokens * 0.06) / 1000; // $0.06 per 1K tokens
   console.log(`Approximate cost: $${(promptCost + completionCost).toFixed(4)}`);
 }
 ```
@@ -256,9 +252,9 @@ if (response.usage) {
 
 ```typescript
 // Create bridge with initial model
-const bridge = createOpenAIBridge({ 
+const bridge = createOpenAIBridge({
   apiKey: process.env.OPENAI_API_KEY,
-  model: 'gpt-4' 
+  model: 'gpt-4',
 });
 
 // Switch to different model at runtime
@@ -344,7 +340,7 @@ if (expectedResponseLength > 100) {
 ```typescript
 // Monitor and optimize token usage
 const response = await bridge.invoke(prompt, {
-  maxTokens: 500,  // Limit response length
+  maxTokens: 500, // Limit response length
   temperature: 0.1, // Reduce randomness for consistent responses
 });
 ```

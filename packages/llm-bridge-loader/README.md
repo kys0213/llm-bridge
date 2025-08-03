@@ -164,9 +164,9 @@ Configuration for loading a bridge.
 
 ```typescript
 interface BridgeConfig {
-  name: string;         // Unique identifier for the bridge
-  package: string;      // Package name (e.g., 'ollama-llm-bridge')
-  config: unknown;      // Bridge-specific configuration
+  name: string; // Unique identifier for the bridge
+  package: string; // Package name (e.g., 'ollama-llm-bridge')
+  config: unknown; // Bridge-specific configuration
 }
 ```
 
@@ -227,11 +227,7 @@ const bridge = await loader.loadBridge('ollama-llm-bridge', {
 The loader provides detailed error information:
 
 ```typescript
-import { 
-  BridgeLoadError, 
-  BridgeNotFoundError, 
-  ConfigurationError 
-} from 'llm-bridge-loader';
+import { BridgeLoadError, BridgeNotFoundError, ConfigurationError } from 'llm-bridge-loader';
 
 try {
   const bridge = await loader.loadBridge('unknown-bridge', {});

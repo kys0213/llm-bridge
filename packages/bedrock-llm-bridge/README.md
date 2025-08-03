@@ -106,9 +106,10 @@ for await (const chunk of stream) {
 import { createBedrockBridge } from 'bedrock-llm-bridge';
 
 const bridge = createBedrockBridge({
-  region: 'us-east-1',                    // AWS region
+  region: 'us-east-1', // AWS region
   model: 'anthropic.claude-3-sonnet-20240229-v1:0', // Model ID
-  credentials: {                          // Optional: Custom credentials
+  credentials: {
+    // Optional: Custom credentials
     accessKeyId: 'your-access-key',
     secretAccessKey: 'your-secret-key',
   },
@@ -120,10 +121,10 @@ const bridge = createBedrockBridge({
 ### Convenience Factories
 
 ```typescript
-import { 
+import {
   createAnthropicBridge,
   createMetaBridge,
-  createDefaultBedrockBridge 
+  createDefaultBedrockBridge,
 } from 'bedrock-llm-bridge';
 
 // Anthropic Claude with defaults
@@ -173,18 +174,19 @@ const defaultBridge = createDefaultBedrockBridge({
 
 ```typescript
 interface BedrockConfig {
-  region: string;                    // AWS region (required)
-  model: string;                     // Model ID (required)
-  credentials?: {                    // AWS credentials (optional)
+  region: string; // AWS region (required)
+  model: string; // Model ID (required)
+  credentials?: {
+    // AWS credentials (optional)
     accessKeyId: string;
     secretAccessKey: string;
     sessionToken?: string;
   };
-  maxTokens?: number;               // Maximum tokens to generate
-  temperature?: number;             // 0.0 - 1.0
-  topP?: number;                   // 0.0 - 1.0
-  topK?: number;                   // Integer >= 1 (for supported models)
-  stopSequences?: string[];        // Stop sequences
+  maxTokens?: number; // Maximum tokens to generate
+  temperature?: number; // 0.0 - 1.0
+  topP?: number; // 0.0 - 1.0
+  topK?: number; // Integer >= 1 (for supported models)
+  stopSequences?: string[]; // Stop sequences
 }
 ```
 
@@ -256,9 +258,9 @@ console.log(metadata);
 
 // Check specific capabilities
 const manifest = bridge.getManifest();
-console.log(manifest.capabilities.supportsStreaming);    // true for Claude 3
-console.log(manifest.capabilities.supportsMultiTurn);    // true
-console.log(manifest.capabilities.supportsToolCall);     // false (coming soon)
+console.log(manifest.capabilities.supportsStreaming); // true for Claude 3
+console.log(manifest.capabilities.supportsMultiTurn); // true
+console.log(manifest.capabilities.supportsToolCall); // false (coming soon)
 ```
 
 ## 🚦 Error Handling
@@ -266,12 +268,12 @@ console.log(manifest.capabilities.supportsToolCall);     // false (coming soon)
 The bridge provides comprehensive error handling with standardized error types:
 
 ```typescript
-import { 
+import {
   ServiceUnavailableError,
   InvalidRequestError,
   AuthenticationError,
   ModelNotSupportedError,
-  NetworkError
+  NetworkError,
 } from 'llm-bridge-spec';
 
 try {
@@ -295,16 +297,16 @@ try {
 
 ```typescript
 // Create bridge with initial model
-const bridge = createBedrockBridge({ 
+const bridge = createBedrockBridge({
   region: 'us-east-1',
-  model: 'anthropic.claude-3-sonnet-20240229-v1:0'
+  model: 'anthropic.claude-3-sonnet-20240229-v1:0',
 });
 
 // Switch to different model at runtime
 bridge.setModel('anthropic.claude-3-haiku-20240307-v1:0');
 
 // Get current model
-console.log(bridge.getCurrentModel()); 
+console.log(bridge.getCurrentModel());
 
 // Get supported models for current region
 console.log(bridge.getSupportedModels());
@@ -338,10 +340,10 @@ const response = await bridge.invoke(prompt);
 if (response.usage) {
   console.log('Input tokens:', response.usage.promptTokens);
   console.log('Output tokens:', response.usage.completionTokens);
-  
+
   // Estimate costs (example rates for Claude 3 Sonnet)
-  const inputCost = response.usage.promptTokens * 0.003 / 1000;   // $0.003 per 1K tokens
-  const outputCost = response.usage.completionTokens * 0.015 / 1000; // $0.015 per 1K tokens
+  const inputCost = (response.usage.promptTokens * 0.003) / 1000; // $0.003 per 1K tokens
+  const outputCost = (response.usage.completionTokens * 0.015) / 1000; // $0.015 per 1K tokens
   console.log(`Estimated cost: $${(inputCost + outputCost).toFixed(6)}`);
 }
 ```
