@@ -55,6 +55,33 @@ Bridges use peer dependencies for their respective SDKs
 
 ## Development Patterns
 
+### Git Workflow
+
+**IMPORTANT**: Follow [Git Workflow Guide](./docs/GIT_WORKFLOW_GUIDE.md) for all development work.
+
+**Branch Strategy:**
+
+- `feature/ux-*` - UX improvements and user interface features
+- `feature/component-*` - Component development
+- `feature/core-*` - Core logic and functionality
+- `fix/*` - Bug fixes
+- `perf/*` - Performance optimizations
+- `refactor/*` - Code refactoring
+
+**Commit Guidelines:**
+
+- `✅ [TODO x/y] Description` - TODO completion
+- `🚧 [TODO x/y] WIP: Description` - Work in progress
+- `🎉 [FEATURE] Description` - Feature completion
+
+**Quality Checks (before each commit):**
+
+```bash
+pnpm lint      # Code style verification
+pnpm test:ci   # Unit tests (skip E2E)
+pnpm build     # Build verification
+```
+
 ### Code Quality & Formatting
 
 - **Automatic formatting:** Pre-commit hooks ensure consistent code style
@@ -63,6 +90,8 @@ Bridges use peer dependencies for their respective SDKs
 - **Configuration:** Prettier with project-specific rules in `.prettierrc.json`
 
 ### Adding New Bridge Package
+
+**Follow Git Workflow**: Create `feature/core-{provider}-{model}-bridge` branch before starting.
 
 1. **Create package structure:**
 
@@ -151,6 +180,28 @@ export function manifest(): LlmManifest {
 }
 ```
 
+## Deployment System
+
+### Automated CD Pipeline
+
+- **Trigger**: main branch merge with changes in `packages/` directory
+- **Process**: Changed packages → Version bump → Build → Test → npm publish
+- **Dependencies**: Publishes in dependency order (llm-bridge-spec first)
+- **Requirements**: NPM_TOKEN secret configured in GitHub
+
+### Manual Deployment
+
+```bash
+# Deploy all changed packages
+./scripts/deploy.sh
+
+# Deploy specific package manually
+cd packages/{package-name}
+npm version patch
+pnpm build
+pnpm publish --access public
+```
+
 ## Common Development Tasks
 
 ### Workspace Commands (from root)
@@ -163,7 +214,7 @@ pnpm build
 pnpm test
 pnpm test:ci  # Skip E2E tests (for CI)
 
-# Code quality
+# Code quality (follow before each commit)
 pnpm lint
 pnpm lint:fix
 pnpm format                    # Auto-fix formatting
@@ -173,6 +224,14 @@ pnpm format:check:detailed    # Detailed formatting check with error details
 # Work with specific package
 pnpm --filter {package-name} build
 pnpm --filter {package-name} test
+
+# Git workflow commands
+git checkout -b feature/component-new-bridge  # Create feature branch
+git commit -m "✅ [TODO 1/3] Add bridge structure"  # TODO-based commits
+git checkout main && git merge feature/component-new-bridge  # Merge completed feature
+
+# Deployment (automated)
+./scripts/deploy.sh           # Manual deployment script
 ```
 
 ### Debugging Bridge Issues
@@ -191,11 +250,20 @@ pnpm --filter {package-name} test
 
 ### Adding New Capabilities
 
-1. Update `llm-bridge-spec` types if needed
-2. Implement in bridge class
-3. Update manifest capabilities
-4. Add corresponding tests
-5. Update documentation
+**Git Workflow**: Use `feature/core-*` branch for core functionality changes.
+
+1. Update `llm-bridge-spec` types if needed (`✅ [TODO 1/5]`)
+2. Implement in bridge class (`✅ [TODO 2/5]`)
+3. Update manifest capabilities (`✅ [TODO 3/5]`)
+4. Add corresponding tests (`✅ [TODO 4/5]`)
+5. Update documentation (`✅ [TODO 5/5]`)
+
+**Commit each TODO separately** with quality checks:
+
+```bash
+# After each TODO completion
+pnpm lint && pnpm test:ci && git commit -m "✅ [TODO x/5] Description"
+```
 
 ## Naming Conventions
 
@@ -211,6 +279,8 @@ pnpm --filter {package-name} test
 - [Interface Specification](./docs/INTERFACE_SPEC.md) - Core interface definitions
 - [Test Guide](./docs/TEST_GUIDE.md) - Testing frameworks and patterns
 - [Problem Solving Strategy](./docs/PROBLEM_SOLVING.md) - Debugging and troubleshooting
+- [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) - Automated deployment and release process
+- [Git Workflow Guide](./docs/GIT_WORKFLOW_GUIDE.md) - Branch strategy and commit guidelines
 
 ## Key Files to Check
 
