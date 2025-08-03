@@ -1,6 +1,6 @@
 {
   "name": "llm-bridge-loader",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "LLM Bridge Loader - load bridges from dependencies",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
