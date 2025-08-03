@@ -59,8 +59,9 @@ Bridges use peer dependencies for their respective SDKs
 
 **IMPORTANT**: Follow [Git Workflow Guide](./docs/GIT_WORKFLOW_GUIDE.md) for all development work.
 
-**Branch Strategy:**
+**🚨 Critical Rule: NEVER merge directly to main locally! Always use PR.**
 
+**Branch Strategy:**
 - `feature/ux-*` - UX improvements and user interface features
 - `feature/component-*` - Component development
 - `feature/core-*` - Core logic and functionality
@@ -69,10 +70,26 @@ Bridges use peer dependencies for their respective SDKs
 - `refactor/*` - Code refactoring
 
 **Commit Guidelines:**
-
 - `✅ [TODO x/y] Description` - TODO completion
 - `🚧 [TODO x/y] WIP: Description` - Work in progress
 - `🎉 [FEATURE] Description` - Feature completion
+
+**PR-Based Workflow:**
+
+```bash
+# 1. Work on feature branch
+git checkout -b feature/your-branch
+git commit -m "✅ [TODO 1/3] Description"
+
+# 2. Push and create PR
+git push origin feature/your-branch
+# Create PR on GitHub
+
+# 3. Code Review → Squash Merge
+# 4. Local cleanup after PR merge
+git checkout main && git pull origin main
+git branch -d feature/your-branch
+```
 
 **Quality Checks (before each commit):**
 
@@ -225,10 +242,11 @@ pnpm format:check:detailed    # Detailed formatting check with error details
 pnpm --filter {package-name} build
 pnpm --filter {package-name} test
 
-# Git workflow commands
+# Git workflow commands (PR-based workflow)
 git checkout -b feature/component-new-bridge  # Create feature branch
 git commit -m "✅ [TODO 1/3] Add bridge structure"  # TODO-based commits
-git checkout main && git merge feature/component-new-bridge  # Merge completed feature
+git push origin feature/component-new-bridge  # Push to remote
+# Create PR on GitHub → Code Review → Squash Merge
 
 # Deployment (automated)
 ./scripts/deploy.sh           # Manual deployment script
@@ -263,6 +281,14 @@ git checkout main && git merge feature/component-new-bridge  # Merge completed f
 ```bash
 # After each TODO completion
 pnpm lint && pnpm test:ci && git commit -m "✅ [TODO x/5] Description"
+```
+
+**Complete workflow:**
+```bash
+git checkout -b feature/core-new-capability
+# Work on TODOs 1-5 with separate commits
+git push origin feature/core-new-capability
+# Create PR → Code Review → Squash Merge
 ```
 
 ## Naming Conventions
