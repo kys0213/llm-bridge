@@ -1,0 +1,164 @@
+name: CD (Continuous Deployment)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # 수동 트리거 허용
+
+# 동시 배포 방지
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # 배포 전 검증
+  pre-deploy-checks:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check-changes.outputs.should-deploy }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # HEAD와 HEAD~1 비교를 위해 필요
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for package changes
+        id: check-changes
+        run: |
+          echo "변경사항 확인 중..."
+
+          # packages 디렉토리의 변경사항 확인
+          if git diff --name-only HEAD~1 HEAD | grep -q "^packages/"; then
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+            echo "✅ packages 디렉토리에 변경사항이 감지되었습니다."
+          else
+            echo "should-deploy=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ packages 디렉토리에 변경사항이 없습니다. 배포를 건너뜁니다."
+          fi
+
+      - name: Lint check
+        if: steps.check-changes.outputs.should-deploy == 'true'
+        run: pnpm lint
+
+      - name: Format check with detailed output
+        if: steps.check-changes.outputs.should-deploy == 'true'
+        run: ./scripts/format-check.sh
+
+      - name: Type check and build
+        if: steps.check-changes.outputs.should-deploy == 'true'
+        run: pnpm build
+
+      - name: Run unit tests (skip E2E)
+        if: steps.check-changes.outputs.should-deploy == 'true'
+        run: pnpm test:ci
+
+  # 메인 배포 작업
+  deploy:
+    runs-on: ubuntu-latest
+    needs: pre-deploy-checks
+    if: needs.pre-deploy-checks.outputs.should-deploy == 'true'
+
+    environment:
+      name: production
+      url: https://www.npmjs.com/~llm-bridge
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 전체 히스토리 필요
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Run deployment script
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: ./scripts/deploy.sh
+
+      - name: Create deployment summary
+        if: always()
+        run: |
+          echo "## 🚀 배포 완료" >> $GITHUB_STEP_SUMMARY
+          echo "배포 일시: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "브랜치: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "커밋: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 배포된 패키지들" >> $GITHUB_STEP_SUMMARY
+          echo "변경된 패키지들이 npm에 성공적으로 배포되었습니다." >> $GITHUB_STEP_SUMMARY
+
+  # 배포 실패 시 알림
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: [pre-deploy-checks, deploy]
+    if: failure() && needs.pre-deploy-checks.outputs.should-deploy == 'true'
+
+    steps:
+      - name: Create failure notification
+        run: |
+          echo "## ❌ 배포 실패" >> $GITHUB_STEP_SUMMARY
+          echo "배포 과정에서 오류가 발생했습니다." >> $GITHUB_STEP_SUMMARY
+          echo "실패 일시: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "브랜치: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "커밋: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "로그를 확인하여 문제를 해결해주세요." >> $GITHUB_STEP_SUMMARY
