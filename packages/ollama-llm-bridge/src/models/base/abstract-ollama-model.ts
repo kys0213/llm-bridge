@@ -16,7 +16,16 @@ import { OllamaBaseConfig } from '../../types/config';
  * @template TConfig - The type of model-specific configuration
  */
 export abstract class AbstractOllamaModel<TConfig extends OllamaBaseConfig = OllamaBaseConfig> {
+  protected config?: TConfig;
+
   constructor(protected modelId: string) {}
+
+  /**
+   * 설정 저장
+   */
+  setConfig(config: TConfig): void {
+    this.config = config;
+  }
 
   /**
    * Build the Ollama chat request for the specific model
