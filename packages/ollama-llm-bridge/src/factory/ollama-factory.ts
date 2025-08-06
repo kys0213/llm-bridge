@@ -75,3 +75,18 @@ export function createGemmaBridge(config?: Partial<OllamaBaseConfig>): OllamaBri
 
   return createOllamaBridge(gemmaConfig);
 }
+
+/**
+ * GPT-OSS 모델용 편의 팩토리 함수
+ */
+export function createGptOssBridge(config?: Partial<OllamaBaseConfig>): OllamaBridge {
+  const gptOssConfig: OllamaBaseConfig = {
+    host: 'http://localhost:11434',
+    model: 'gpt-oss-20:b',
+    temperature: 0.7,
+    num_predict: 4096,
+    ...config,
+  };
+
+  return createOllamaBridge(gptOssConfig);
+}

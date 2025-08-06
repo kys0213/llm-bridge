@@ -34,7 +34,8 @@ ollama-llm-bridge/
 ├── models/
 │   ├── base/AbstractOllamaModel     # Abstract base class
 │   ├── llama/LlamaModel            # Llama implementation
-│   └── gemma/GemmaModel            # Gemma implementation
+│   ├── gemma/GemmaModel            # Gemma implementation
+│   └── gpt-oss/GptOssModel        # GPT-OSS implementation
 ├── bridge/OllamaBridge             # Main bridge class
 ├── factory/                        # Factory functions
 └── utils/error-handler             # Error handling
@@ -50,7 +51,7 @@ import { createOllamaBridge } from 'ollama-llm-bridge';
 // Create bridge with auto-detected model
 const bridge = createOllamaBridge({
   host: 'http://localhost:11434',
-  model: 'llama3.2', // or 'gemma3n:latest'
+  model: 'llama3.2', // or 'gemma3n:latest' or 'gpt-oss-20:b'
   temperature: 0.7,
 });
 
@@ -112,7 +113,12 @@ const bridge = createOllamaBridge({
 ### Convenience Factories
 
 ```typescript
-import { createLlamaBridge, createGemmaBridge, createDefaultOllamaBridge } from 'ollama-llm-bridge';
+import {
+  createLlamaBridge,
+  createGemmaBridge,
+  createGptOssBridge,
+  createDefaultOllamaBridge,
+} from 'ollama-llm-bridge';
 
 // Llama with defaults
 const llamaBridge = createLlamaBridge({
@@ -124,6 +130,11 @@ const llamaBridge = createLlamaBridge({
 const gemmaBridge = createGemmaBridge({
   model: 'gemma3n:7b', // Optional, defaults to 'gemma3n:latest'
   num_predict: 1024,
+});
+
+// GPT-OSS with defaults
+const gptOssBridge = createGptOssBridge({
+  model: 'gpt-oss-20:b', // Optional, defaults to 'gpt-oss-20:b'
 });
 
 // Default configuration (Llama 3.2)
@@ -153,6 +164,10 @@ const defaultBridge = createDefaultOllamaBridge({
 - `gemma:latest`
 - `gemma:7b`
 - `gemma:2b`
+
+### GPT-OSS Models
+
+- `gpt-oss-20:b`
 
 ## ⚙️ Configuration
 

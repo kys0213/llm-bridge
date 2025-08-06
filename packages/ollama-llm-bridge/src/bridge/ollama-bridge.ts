@@ -28,7 +28,9 @@ export class OllamaBridge implements LlmBridge {
    */
   private resolveModel(modelId: string): AbstractOllamaModel {
     try {
-      return createModelFromId(modelId);
+      const model = createModelFromId(modelId);
+      model.setConfig(this.config);
+      return model;
     } catch (error) {
       throw new ModelNotSupportedError(modelId, [...ALL_SUPPORTED_MODELS], error as Error);
     }

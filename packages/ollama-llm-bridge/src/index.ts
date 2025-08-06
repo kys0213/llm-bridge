@@ -10,6 +10,7 @@ export {
   createDefaultOllamaBridge,
   createLlamaBridge,
   createGemmaBridge,
+  createGptOssBridge,
 } from './factory/ollama-factory';
 
 // 타입들
@@ -20,8 +21,10 @@ export {
   AbstractOllamaModel,
   LlamaModel,
   GemmaModel,
+  GptOssModel,
   LlamaConfig,
   GemmaConfig,
+  GptOssConfig,
   ALL_SUPPORTED_MODELS,
   createModelFromId,
 } from './models';
