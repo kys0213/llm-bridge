@@ -113,7 +113,7 @@ export class OpenAIBridge implements LlmBridge {
       version: this.modelMetadata.version,
       description: `OpenAI ${this.modelMetadata.family} Bridge Implementation`,
       model: this.model,
-      contextWindow: this.modelMetadata.contextWindow,
+      contextWindow: this.modelMetadata.contextWindowTokens,
       maxTokens: this.modelMetadata.maxTokens,
     };
   }

@@ -149,6 +149,7 @@ export interface LlmManifest {
   entry: string; // Entry point file path
   configSchema: JSONObjectSchema; // Configuration schema
   capabilities: LlmBridgeCapabilities; // Supported features
+  models: LlmModelInfo[]; // Supported models and pricing
   description: string; // Bridge description
 }
 ```
@@ -165,6 +166,46 @@ export interface LlmBridgeCapabilities {
   supportsMultiTurn: boolean; // Multi-turn conversation support
   supportsStreaming: boolean; // Streaming response support
   supportsVision: boolean; // Vision/image processing support
+}
+```
+
+### LlmModelPricing
+
+Cost information per model:
+
+```typescript
+export interface LlmModelPricing {
+  unit: number; // Token unit basis (e.g., per 1000 tokens)
+  currency: string; // Currency code
+  prompt: number; // Prompt cost per unit
+  completion: number; // Completion cost per unit
+}
+```
+
+### LlmModelInfo
+
+Model metadata with pricing:
+
+```typescript
+export interface LlmModelInfo {
+  name: string; // Model name or ID
+  contextWindowTokens: number; // Maximum context window size in tokens
+  pricing: LlmModelPricing; // Cost information
+}
+```
+
+Example `models` entry:
+
+```json
+{
+  "name": "gpt-4o",
+  "contextWindowTokens": 128000,
+  "pricing": {
+    "unit": 1000,
+    "currency": "USD",
+    "prompt": 0.005,
+    "completion": 0.015
+  }
 }
 ```
 

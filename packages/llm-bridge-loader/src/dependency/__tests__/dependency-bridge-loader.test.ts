@@ -9,5 +9,8 @@ describe('DependencyLoader', () => {
     expect(result.manifest.name).toBe('openai-bridge');
     expect(result.ctor).toBeDefined();
     expect(result.configSchema).toBeDefined();
+    expect(Array.isArray(result.manifest.models)).toBe(true);
+    expect(result.manifest.models[0].contextWindowTokens).toBeGreaterThan(0);
+    expect(result.manifest.models[0].pricing).toBeDefined();
   });
 });
