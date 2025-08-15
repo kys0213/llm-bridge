@@ -1,3 +1,5 @@
+import { LlmModelInfo, LlmModelPricing } from 'llm-bridge-spec';
+
 /**
  * OpenAI 모델 enum
  */
@@ -26,8 +28,9 @@ export enum OpenAIModelEnum {
 export interface ModelMetadata {
   family: string;
   version: string;
-  contextWindow: number;
+  contextWindowTokens: number;
   maxTokens: number;
+  pricing: LlmModelPricing;
 }
 
 /**
@@ -38,64 +41,79 @@ export const MODEL_METADATA: Record<OpenAIModelEnum, ModelMetadata> = {
   [OpenAIModelEnum.GPT_4O]: {
     family: 'GPT-4o',
     version: '4',
-    contextWindow: 128000,
+    contextWindowTokens: 128000,
     maxTokens: 16384,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.005, completion: 0.015 },
   },
   [OpenAIModelEnum.GPT_4O_MINI]: {
     family: 'GPT-4o Mini',
     version: '4',
-    contextWindow: 128000,
+    contextWindowTokens: 128000,
     maxTokens: 16384,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.00015, completion: 0.0006 },
   },
 
   // GPT-4 시리즈
   [OpenAIModelEnum.GPT_4_TURBO]: {
     family: 'GPT-4 Turbo',
     version: '4',
-    contextWindow: 128000,
+    contextWindowTokens: 128000,
     maxTokens: 4096,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.01, completion: 0.03 },
   },
   [OpenAIModelEnum.GPT_4_TURBO_PREVIEW]: {
     family: 'GPT-4 Turbo Preview',
     version: '4',
-    contextWindow: 128000,
+    contextWindowTokens: 128000,
     maxTokens: 4096,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.01, completion: 0.03 },
   },
   [OpenAIModelEnum.GPT_4]: {
     family: 'GPT-4',
     version: '4',
-    contextWindow: 8192,
+    contextWindowTokens: 8192,
     maxTokens: 4096,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.03, completion: 0.06 },
   },
 
   // GPT-3.5 시리즈
   [OpenAIModelEnum.GPT_35_TURBO]: {
     family: 'GPT-3.5 Turbo',
     version: '3.5',
-    contextWindow: 16385,
+    contextWindowTokens: 16385,
     maxTokens: 4096,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.001, completion: 0.002 },
   },
   [OpenAIModelEnum.GPT_35_TURBO_16K]: {
     family: 'GPT-3.5 Turbo 16K',
     version: '3.5',
-    contextWindow: 16385,
+    contextWindowTokens: 16385,
     maxTokens: 4096,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.001, completion: 0.002 },
   },
 
   // o1 시리즈
   [OpenAIModelEnum.O1_PREVIEW]: {
     family: 'o1 Preview',
     version: '1',
-    contextWindow: 128000,
+    contextWindowTokens: 128000,
     maxTokens: 32768,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.015, completion: 0.06 },
   },
   [OpenAIModelEnum.O1_MINI]: {
     family: 'o1 Mini',
     version: '1',
-    contextWindow: 128000,
+    contextWindowTokens: 128000,
     maxTokens: 65536,
+    pricing: { unit: 1000, currency: 'USD', prompt: 0.003, completion: 0.012 },
   },
 };
+
+export const OPENAI_MODELS: LlmModelInfo[] = Object.entries(MODEL_METADATA).map(([name, data]) => ({
+  name,
+  contextWindowTokens: data.contextWindowTokens,
+  pricing: data.pricing,
+}));
 
 /**
  * 기본 메타데이터 (알려지지 않은 모델용)
@@ -103,8 +121,9 @@ export const MODEL_METADATA: Record<OpenAIModelEnum, ModelMetadata> = {
 export const DEFAULT_MODEL_METADATA: ModelMetadata = {
   family: 'OpenAI',
   version: 'unknown',
-  contextWindow: 4096,
+  contextWindowTokens: 4096,
   maxTokens: 4096,
+  pricing: { unit: 1000, currency: 'USD', prompt: 0, completion: 0 },
 };
 
 /**

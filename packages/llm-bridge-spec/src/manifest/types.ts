@@ -15,6 +15,26 @@ export interface LlmBridgeCapabilities {
 }
 
 /**
+ * 모델별 가격 정보입니다.
+ */
+export interface LlmModelPricing {
+  unit: number;
+  currency: string;
+  prompt: number;
+  completion: number;
+}
+
+/**
+ * LLM 모델 정보입니다.
+ */
+export interface LlmModelInfo {
+  name: string;
+  /** 최대 컨텍스트 윈도우 크기(토큰 단위) */
+  contextWindowTokens: number;
+  pricing: LlmModelPricing;
+}
+
+/**
  * LLM 매니페스트 정보입니다.
  */
 export interface LlmManifest {
@@ -30,6 +50,8 @@ export interface LlmManifest {
   configSchema: ZodObject;
   /** 지원 기능 정보 */
   capabilities: LlmBridgeCapabilities;
+  /** 지원 모델 정보 */
+  models: LlmModelInfo[];
   /** LLM 설명 */
   description: string;
 }
