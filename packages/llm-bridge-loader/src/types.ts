@@ -7,6 +7,12 @@ export interface BridgeLoadResult<M extends LlmManifest> {
   configSchema: M['configSchema'];
 }
 
+export interface ScanOptions {
+  cwd?: string;
+  includeDev?: boolean;
+}
+
 export interface BridgeLoader {
   load<M extends LlmManifest>(pkg: string): Promise<BridgeLoadResult<M>>;
+  scan<M extends LlmManifest>(options?: ScanOptions): Promise<BridgeLoadResult<M>[]>;
 }

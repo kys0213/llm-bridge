@@ -1,6 +1,8 @@
 import { LlmManifest, LlmBridge } from 'llm-bridge-spec';
 import { z } from 'zod';
-import { BridgeLoader, BridgeLoadResult } from '../types';
+import fs from 'fs/promises';
+import path from 'path';
+import { BridgeLoader, BridgeLoadResult, ScanOptions } from '../types';
 
 /**
  * 의존성 기반 로더 구현체입니다.
@@ -22,16 +24,36 @@ export class DependencyBridgeLoader implements BridgeLoader {
     const ctor = BridgeClass as new (config: z.infer<M['configSchema']>) => LlmBridge;
     const configSchema = manifest.configSchema;
 
-    return { manifest, ctor, configSchema };
+    const result: BridgeLoadResult<M> = { manifest, ctor, configSchema };
+    this.validate(result);
+    return result;
   }
 
-  private async loadModule(pkg: string) {
-    try {
-      const mod = await import(pkg);
+  async scan<M extends LlmManifest>(options: ScanOptions = {}): Promise<BridgeLoadResult<M>[]> {
+    const { cwd = process.cwd(), includeDev = true } = options;
+    const pkgPath = path.join(cwd, 'package.json');
+    const pkgData = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
 
-      return mod.default;
-    } catch (error) {
-      throw new Error(`Failed to load LLM bridge package: ${pkg}`);
+    const deps = Object.keys(pkgData.dependencies ?? {});
+    const devDeps = includeDev ? Object.keys(pkgData.devDependencies ?? {}) : [];
+    const candidates = [...deps, ...devDeps].filter((name) => name.endsWith('-llm-bridge'));
+
+    const results: BridgeLoadResult<M>[] = [];
+    for (const name of candidates) {
+      try {
+        const loaded = await this.load<M>(name);
+        results.push(loaded);
+      } catch (err) {
+        throw new Error(`[llm-bridge-loader] ${name} 로딩 실패`, { cause: err });
+      }
+    }
+
+    return results;
+  }
+
+  private validate<M extends LlmManifest>(result: BridgeLoadResult<M>): void {
+    if (!result.manifest?.name || typeof result.ctor !== 'function') {
+      throw new Error(`Invalid LLM bridge manifest: ${result.manifest?.name ?? 'unknown'}`);
     }
   }
 }
