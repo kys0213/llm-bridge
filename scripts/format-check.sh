@@ -11,6 +11,7 @@ if pnpm format:check > /tmp/format-check.log 2>&1; then
 else
     echo "❌ Formatting issues found!"
     echo ""
+    cat /tmp/format-check.log
     
     # 문제가 있는 파일들 표시
     echo "📋 Files that need formatting:"
@@ -19,7 +20,7 @@ else
     echo ""
     echo "💡 To fix these issues:"
     echo "  Local:  pnpm format"
-    echo "  Single: npx prettier --write [filename]"
+    echo "  Single: pnpm prettier --write [filename]"
     echo ""
     echo "📝 This will format all files according to the project's Prettier configuration."
     
