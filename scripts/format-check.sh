@@ -11,6 +11,7 @@ if pnpm format:check > /tmp/format-check.log 2>&1; then
 else
     echo "❌ Formatting issues found!"
     echo ""
+    cat /tmp/format-check.log
     
     # 문제가 있는 파일들 표시
     echo "📋 Files that need formatting:"
