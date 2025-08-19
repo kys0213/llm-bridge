@@ -100,17 +100,14 @@
 #### 테스트 케이스
 
 1. **잘못된 호스트 URL 형식**
-
    - 조건: `host: "invalid-url"` 설정
    - 예상 결과: `ConfigurationError` 발생
 
 2. **지원하지 않는 모델 설정**
-
    - 조건: `model: "unsupported-model"` 설정
    - 예상 결과: `ConfigurationError` 발생
 
 3. **필수 설정 필드 누락**
-
    - 조건: `host` 또는 `model` 누락
    - 예상 결과: `ConfigurationError` 발생
 
@@ -126,12 +123,10 @@
 #### 테스트 케이스
 
 1. **Ollama 서버 연결 실패**
-
    - 조건: Ollama 서버가 실행되지 않은 상태에서 API 호출
    - 예상 결과: `NetworkError` 발생 (ECONNREFUSED)
 
 2. **잘못된 호스트 주소**
-
    - 조건: `host: "http://non-existent-host:11434"`
    - 예상 결과: `NetworkError` 발생 (DNS 실패)
 
@@ -147,7 +142,6 @@
 #### 테스트 케이스
 
 1. **Ollama 서버 다운**
-
    - 조건: Ollama 서버가 중단된 상태
    - 예상 결과: `ServiceUnavailableError` 발생 (연결 거부)
 
@@ -162,7 +156,6 @@
 #### 테스트 케이스
 
 1. **존재하지 않는 모델 요청**
-
    - 조건: `model: "non-existent-model"`
    - 예상 결과: `ModelNotSupportedError` 발생
 
@@ -178,12 +171,10 @@
 #### 테스트 케이스
 
 1. **빈 메시지 배열**
-
    - 조건: `messages: []`
    - 예상 결과: `InvalidRequestError` 발생
 
 2. **잘못된 메시지 형식**
-
    - 조건: 메시지에 `role` 또는 `content` 누락
    - 예상 결과: `InvalidRequestError` 발생
 
@@ -199,7 +190,6 @@
 #### 테스트 케이스
 
 1. **잘못된 JSON 응답**
-
    - 조건: Ollama가 유효하지 않은 JSON 반환
    - 예상 결과: `ResponseParsingError` 발생
 
@@ -214,7 +204,6 @@
 #### 테스트 케이스
 
 1. **긴 응답 시간**
-
    - 조건: 매우 긴 텍스트 생성 요청으로 타임아웃 유발
    - 예상 결과: `TimeoutError` 발생
 
@@ -230,7 +219,6 @@
 #### 테스트 케이스
 
 1. **Ollama 서버 500 에러**
-
    - 조건: 서버 내부 오류 발생
    - 예상 결과: `APIError` 발생
 
@@ -379,12 +367,10 @@ SKIP_E2E_TESTS=true pnpm test
 **테스트 케이스:**
 
 1. **정상 텍스트 생성**
-
    - 조건: 유효한 프롬프트와 옵션으로 호출
    - 예상 결과: `LlmBridgeResponse` 형식의 응답 반환
 
 2. **다양한 InvokeOption 테스트**
-
    - 조건: temperature, maxTokens, topP 등 옵션 설정
    - 예상 결과: 설정된 옵션이 Ollama API에 올바르게 전달
 
@@ -397,12 +383,10 @@ SKIP_E2E_TESTS=true pnpm test
 **테스트 케이스:**
 
 1. **스트리밍 응답 생성**
-
    - 조건: 긴 텍스트 생성 요청으로 스트리밍 호출
    - 예상 결과: AsyncGenerator로 청크별 응답 수신
 
 2. **스트리밍 중단 테스트**
-
    - 조건: 스트리밍 중 연결 중단 또는 취소
    - 예상 결과: 적절한 에러 처리 및 리소스 정리
 
@@ -415,7 +399,6 @@ SKIP_E2E_TESTS=true pnpm test
 **테스트 케이스:**
 
 1. **모델 메타데이터 반환**
-
    - 조건: 초기화된 모델의 메타데이터 요청
    - 예상 결과: `LlmMetadata` 형식의 정보 반환
 
@@ -428,7 +411,6 @@ SKIP_E2E_TESTS=true pnpm test
 **테스트 케이스:**
 
 1. **지원 모델 자동 감지**
-
    - 조건: 'llama3.2', 'gemma3n:latest' 등 지원 모델 ID
    - 예상 결과: 해당 모델 구현체 반환
 
@@ -449,7 +431,6 @@ SKIP_E2E_TESTS=true pnpm test
 **테스트 케이스:**
 
 1. **런타임 모델 변경**
-
    - 조건: 'llama3.2'에서 'gemma3n:latest'로 변경
    - 예상 결과: 내부 모델 인스턴스와 설정 업데이트
 

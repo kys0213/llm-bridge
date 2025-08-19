@@ -36,7 +36,7 @@ export class DependencyBridgeLoader implements BridgeLoader {
 
     const deps = Object.keys(pkgData.dependencies ?? {});
     const devDeps = includeDev ? Object.keys(pkgData.devDependencies ?? {}) : [];
-    const candidates = [...deps, ...devDeps].filter((name) => name.endsWith('-llm-bridge'));
+    const candidates = [...deps, ...devDeps].filter(name => name.endsWith('-llm-bridge'));
 
     const results: BridgeLoadResult<M>[] = [];
     for (const name of candidates) {
