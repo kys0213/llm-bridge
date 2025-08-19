@@ -19,7 +19,7 @@ else
     echo ""
     echo "💡 To fix these issues:"
     echo "  Local:  pnpm format"
-    echo "  Single: npx prettier --write [filename]"
+    echo "  Single: pnpm prettier --write [filename]"
     echo ""
     echo "📝 This will format all files according to the project's Prettier configuration."
     
