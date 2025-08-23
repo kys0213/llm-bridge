@@ -49,6 +49,11 @@ const response = await bridge.invoke({
 console.log(response.choices[0].message.content[0].text);
 ```
 
+> Import guidelines
+>
+> - Use the package root import: `import { DependencyBridgeLoader } from 'llm-bridge-loader'`
+> - Do not deep-import internal paths like `llm-bridge-loader/src/...` as they are not part of the public API and are blocked by `package.json.exports`.
+
 ### Configuration-Based Loading
 
 ```typescript
