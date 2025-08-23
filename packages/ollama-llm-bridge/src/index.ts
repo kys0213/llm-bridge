@@ -31,3 +31,14 @@ export {
 
 // 에러 핸들러
 export { handleOllamaError, handleFactoryError, validateModel } from './utils/error-handler';
+import { SDK } from 'llm-bridge-spec';
+import { OllamaBridge } from './bridge/ollama-bridge';
+import { createOllamaBridge } from './factory/ollama-factory';
+import { OLLAMA_BRIDGE_MANIFEST } from './bridge/ollama-manifest';
+
+// default export for loader compatibility
+export default SDK.createBridgePackage({
+  bridge: OllamaBridge,
+  factory: createOllamaBridge,
+  manifest: OLLAMA_BRIDGE_MANIFEST,
+});

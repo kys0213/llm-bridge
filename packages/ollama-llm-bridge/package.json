@@ -17,6 +17,7 @@
     "esm",
     "README.md"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "pnpm clean && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
     "dev": "tsc -p tsconfig.json",
