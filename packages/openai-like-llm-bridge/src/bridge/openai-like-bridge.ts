@@ -156,10 +156,17 @@ function toOpenAiMessage(msg: Message): OpenAIChatMessage {
   return { role: msg.role, content: contentText };
 }
 
+type OpenAIRequestOption = {
+  temperature?: number;
+  topP?: number;
+  maxTokens?: number;
+  stream?: boolean;
+};
+
 function buildChatCompletionsRequest(
   messages: Message[],
   config: OpenaiLikeConfig,
-  option: InvokeOption & { stream?: boolean }
+  option: OpenAIRequestOption
 ) {
   const payload: Record<string, unknown> = {
     model: config.model,
@@ -184,7 +191,7 @@ function mapChatCompletionResponse(json: unknown): LlmBridgeResponse {
   };
   const contentText = String(obj?.choices?.[0]?.message?.content ?? '');
   const content: StringContent = { contentType: 'text', value: contentText };
-  const usage: LlmUsage | undefined = obj?.usage
+  const usage = obj?.usage
     ? {
         promptTokens: obj.usage.prompt_tokens ?? 0,
         completionTokens: obj.usage.completion_tokens ?? 0,
@@ -194,12 +201,12 @@ function mapChatCompletionResponse(json: unknown): LlmBridgeResponse {
   return { content, usage };
 }
 
-function mapChatCompletionDelta(json: unknown): LlmBridgeResponse | null {
+function mapChatCompletionDelta(json: unknown) {
   const obj = json as { choices?: { delta?: { content?: unknown } }[] };
   const piece = obj?.choices?.[0]?.delta?.content ?? '';
   if (typeof piece !== 'string' || piece.length === 0) return null;
   const content: StringContent = { contentType: 'text', value: piece };
-  return { content };
+  return { content } as LlmBridgeResponse;
 }
 
 export const __internal = {
