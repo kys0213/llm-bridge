@@ -73,11 +73,13 @@ export const MODEL_METADATA: Record<AnthropicModelEnum, ModelMetadata> = {
   },
 };
 
-export const ANTHROPIC_MODELS: LlmModelInfo[] = Object.entries(MODEL_METADATA).map(([name, data]) => ({
-  name,
-  contextWindowTokens: data.contextWindowTokens,
-  pricing: data.pricing,
-}));
+export const ANTHROPIC_MODELS: LlmModelInfo[] = Object.entries(MODEL_METADATA).map(
+  ([name, data]) => ({
+    name,
+    contextWindowTokens: data.contextWindowTokens,
+    pricing: data.pricing,
+  })
+);
 
 /**
  * 기본 메타데이터 (알려지지 않은 모델용)

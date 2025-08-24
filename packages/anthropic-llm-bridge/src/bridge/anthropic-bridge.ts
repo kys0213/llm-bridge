@@ -15,7 +15,12 @@ import type {
   ToolUseBlock,
 } from '@anthropic-ai/sdk/resources/messages';
 import { AnthropicConfig } from './anthropic-config';
-import { ModelMetadata, getModelMetadata, AnthropicModelEnum, supportsLongContext } from './anthropic-models';
+import {
+  ModelMetadata,
+  getModelMetadata,
+  AnthropicModelEnum,
+  supportsLongContext,
+} from './anthropic-models';
 
 export class AnthropicBridge implements LlmBridge {
   private config: AnthropicConfig;
@@ -92,7 +97,7 @@ export class AnthropicBridge implements LlmBridge {
         const toolCall: BridgeToolCall = {
           toolCallId: chunk.content_block.id,
           name: chunk.content_block.name,
-          arguments: chunk.content_block.input,
+          arguments: chunk.content_block.input as Record<string, unknown>,
         };
 
         yield {
@@ -123,7 +128,7 @@ export class AnthropicBridge implements LlmBridge {
     }
 
     if (this.config.useExtendedOutput) {
-      headers['anthropic-beta'] = headers['anthropic-beta'] 
+      headers['anthropic-beta'] = headers['anthropic-beta']
         ? `${headers['anthropic-beta']},output-128k-2025-02-19`
         : 'output-128k-2025-02-19';
     }
@@ -143,7 +148,7 @@ export class AnthropicBridge implements LlmBridge {
       .map(tc => ({
         toolCallId: tc.id,
         name: tc.name,
-        arguments: tc.input,
+        arguments: tc.input as Record<string, unknown>,
       }));
 
     return {
@@ -196,10 +201,13 @@ export class AnthropicBridge implements LlmBridge {
         .filter(c => c.contentType === 'text')
         .map(c => c.value)
         .join('\n');
-      
-      return messages.map((msg, index) => 
-        index === 0 
-          ? { ...msg, content: `${systemContent}\n\n${typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}` }
+
+      return messages.map((msg, index) =>
+        index === 0
+          ? {
+              ...msg,
+              content: `${systemContent}\n\n${typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}`,
+            }
           : msg
       );
     }
@@ -212,7 +220,10 @@ export class AnthropicBridge implements LlmBridge {
     return option.tools.map(tool => ({
       name: tool.name,
       description: tool.description,
-      input_schema: tool.parameters,
+      input_schema: {
+        type: 'object',
+        ...tool.parameters,
+      },
     }));
   }
 }

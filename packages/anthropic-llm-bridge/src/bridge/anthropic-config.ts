@@ -34,10 +34,7 @@ export const AnthropicConfigSchema = z.object({
     .boolean()
     .optional()
     .describe('Enable 1M context window for supported models (Sonnet 4)'),
-  useExtendedOutput: z
-    .boolean()
-    .optional()
-    .describe('Enable 128K output tokens with beta header'),
+  useExtendedOutput: z.boolean().optional().describe('Enable 128K output tokens with beta header'),
 
   // 고급 설정
   timeout: z.number().optional().describe('Request timeout in milliseconds'),

@@ -8,7 +8,7 @@ import { AnthropicModelEnum } from './anthropic-models';
  */
 export function createAnthropicBridge(config: AnthropicConfig): AnthropicBridge {
   const validatedConfig = AnthropicConfigSchema.parse(config);
-  
+
   const clientConfig: ConstructorParameters<typeof Anthropic>[0] = {
     apiKey: validatedConfig.apiKey,
     baseURL: validatedConfig.baseURL,
@@ -60,7 +60,7 @@ export function createClaudeHaikuBridge(
  * 기본 Anthropic 브릿지 생성 (Sonnet 4 기본값)
  */
 export function createDefaultAnthropicBridge(
-  config: Omit<AnthropicConfig, 'model'> & { model?: string }
+  config: Omit<AnthropicConfig, 'model'> & { model?: AnthropicModelEnum }
 ): AnthropicBridge {
   return createAnthropicBridge({
     temperature: 0.7,

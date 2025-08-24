@@ -174,6 +174,7 @@ describe('AnthropicBridge', () => {
 
       await bridge.invoke(prompt);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockClient.messages.create).toHaveBeenCalledWith(
         expect.any(Object),
         expect.objectContaining({
