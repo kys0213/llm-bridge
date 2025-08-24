@@ -1,4 +1,4 @@
-import { LlmModelInfo, LlmModelPricing } from 'llm-bridge-spec';
+import { LlmModelInfo, LlmModelPricing, ModelNotSupportedError } from 'llm-bridge-spec';
 
 /**
  * Anthropic Claude 모델 enum
@@ -16,6 +16,8 @@ export enum AnthropicModelEnum {
   // Claude Haiku 3.5 (빠르고 경량)
   CLAUDE_HAIKU_3_5 = 'claude-haiku-3.5',
 }
+
+const anthropicModels: string[] = Object.values(AnthropicModelEnum);
 
 /**
  * 모델별 메타데이터 인터페이스
@@ -96,8 +98,13 @@ export const DEFAULT_MODEL_METADATA: ModelMetadata = {
  * 모델 메타데이터를 가져오는 헬퍼 함수
  */
 export function getModelMetadata(model: string): ModelMetadata {
-  const enumModel = model as AnthropicModelEnum;
-  return MODEL_METADATA[enumModel] || DEFAULT_MODEL_METADATA;
+  const enumModel = model;
+
+  if (isAnthropicModel(enumModel)) {
+    return MODEL_METADATA[enumModel];
+  }
+
+  throw new ModelNotSupportedError(model, anthropicModels);
 }
 
 /**
@@ -116,8 +123,6 @@ export function getLongContextPricing(model: string): LlmModelPricing | undefine
   return metadata.longContextPricing;
 }
 
-/**
- * Helper constant for backward compatibility
- * @deprecated Use AnthropicModelEnum instead
- */
-export const AnthropicModels = AnthropicModelEnum;
+function isAnthropicModel(model: string): model is AnthropicModelEnum {
+  return anthropicModels.includes(model);
+}
