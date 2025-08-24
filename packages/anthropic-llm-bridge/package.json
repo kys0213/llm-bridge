@@ -1,6 +1,6 @@
 {
   "name": "anthropic-llm-bridge",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Universal Anthropic Claude LLM Bridge - supports all Claude models",
   "main": "./dist/index.js",
   "module": "./esm/index.js",
