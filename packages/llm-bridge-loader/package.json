@@ -2,18 +2,19 @@
   "name": "llm-bridge-loader",
   "version": "0.0.6",
   "description": "LLM Bridge Loader - load bridges from dependencies",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./esm/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js",
-      "types": "./dist/esm/index.d.ts"
+      "require": "./dist/index.js",
+      "import": "./esm/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
-    "dist/**",
+    "dist",
+    "esm",
     "README.md"
   ],
   "sideEffects": false,
