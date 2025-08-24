@@ -1,5 +1,4 @@
 import type { LlmManifest } from 'llm-bridge-spec';
-import type { ZodObject } from 'zod';
 import { z } from 'zod';
 
 export const OpenaiLikeConfigSchema = z.object({
@@ -32,7 +31,7 @@ export const OPENAI_LIKE_MANIFEST: LlmManifest = {
   name: 'openai-like-llm-bridge',
   language: 'typescript',
   entry: 'src/bridge/openai-like-bridge.ts',
-  configSchema: OpenaiLikeConfigSchema as unknown as ZodObject,
+  configSchema: OpenaiLikeConfigSchema,
   capabilities: {
     modalities: ['text'],
     supportsToolCall: false,
