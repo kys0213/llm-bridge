@@ -4,13 +4,12 @@ import type {
   LlmBridgePrompt,
   LlmBridgeResponse,
   LlmMetadata,
-  LlmUsage,
   Message,
   MultiModalContent,
 } from 'llm-bridge-spec';
 
-import { OpenaiLikeConfig } from './types';
 import type { StringContent } from 'llm-bridge-spec';
+import { OpenaiLikeConfig } from './types';
 
 export class OpenaiLikeBridge implements LlmBridge {
   private proxyInitialized = false;
