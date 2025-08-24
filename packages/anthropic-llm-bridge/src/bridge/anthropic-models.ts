@@ -120,7 +120,8 @@ export function supportsLongContext(model: string): boolean {
  */
 export function getLongContextPricing(model: string): LlmModelPricing | undefined {
   const metadata = getModelMetadata(model);
-  return metadata.longContextPricing;
+  const longContextPricing: LlmModelPricing | undefined = metadata.longContextPricing;
+  return longContextPricing;
 }
 
 function isAnthropicModel(model: string): model is AnthropicModelEnum {
