@@ -21,6 +21,9 @@ function fail(message: string): never {
   throw new Error(message);
 }
 
+// Unsafe cast helper for test-only invalid typing scenarios
+const cast = <T>(v: unknown) => v as T;
+
 // Type guard 헬퍼 함수
 function isErrorOfType<T extends Error>(
   error: unknown,
@@ -77,31 +80,31 @@ describe('Response Handling E2E Tests', () => {
           // content가 없는 메시지
           {
             messages: [
-              {
+              cast<Message>({
                 role: 'user' as const,
                 // content 누락
-              } as unknown as Message,
+              }),
             ],
           },
           // 잘못된 content 타입
           {
             messages: [
-              {
+              cast<Message>({
                 role: 'user' as const,
-                content: 'string instead of object' as unknown as object,
-              } as unknown as Message,
+                content: cast<object>('string instead of object'),
+              }),
             ],
           },
           // 잘못된 role
           {
             messages: [
-              {
-                role: 'invalid_role' as unknown as 'user' | 'assistant' | 'system' | 'tool',
+              cast<Message>({
+                role: cast<'user' | 'assistant' | 'system' | 'tool'>('invalid_role'),
                 content: {
                   contentType: 'text' as 'text' | 'image' | 'audio' | 'video',
                   value: 'Hello',
                 },
-              } as unknown as Message,
+              }),
             ],
           },
         ];
@@ -138,8 +141,8 @@ describe('Response Handling E2E Tests', () => {
           // 음수 maxTokens
           { maxTokens: -100 },
           // 잘못된 타입
-          { temperature: 'invalid' as unknown as number },
-          { maxTokens: 'invalid' as unknown as number },
+          { temperature: cast<number>('invalid') },
+          { maxTokens: cast<number>('invalid') },
         ];
 
         for (const invalidOption of invalidOptions) {
@@ -439,7 +442,7 @@ describe('Response Handling E2E Tests', () => {
         try {
           // 에러를 유발할 수 있는 요청
           await bridge.invoke({
-            messages: [] as unknown as Message[],
+            messages: cast<Message[]>([]),
           });
         } catch (error) {
           // 에러가 발생해도 브릿지 상태는 유지되어야 함
@@ -457,7 +460,7 @@ describe('Response Handling E2E Tests', () => {
       'should provide consistent error behavior across invocations',
       async () => {
         const invalidPrompt = {
-          messages: [] as unknown as Message[],
+          messages: cast<Message[]>([]),
         };
 
         const errors: Error[] = [];

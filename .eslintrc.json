@@ -30,6 +30,10 @@
       {
         "selector": "TSAsExpression > TSAnyKeyword",
         "message": "Do not use 'as any'; use proper typing, generics, or runtime guards."
+      },
+      {
+        "selector": "TSAsExpression[expression.type='TSAsExpression'] TSUnknownKeyword",
+        "message": "Do not use 'as unknown as'; avoid double assertions by validating or narrowing types."
       }
     ]
   },

@@ -15,6 +15,9 @@ import { createOllamaBridge } from '../../factory/ollama-factory';
 import { OllamaBaseConfig } from '../../types/config';
 import { setupE2ETest, TEST_CONFIG } from './test-utils';
 
+// Unsafe cast helper for test-only invalid typing scenarios
+const cast = <T>(v: unknown) => v as T;
+
 describe('Configuration Error E2E Tests', () => {
   beforeAll(async () => {
     try {
@@ -58,12 +61,12 @@ describe('Configuration Error E2E Tests', () => {
 
       // null 설정
       expect(() => {
-        createOllamaBridge(null as unknown as OllamaBaseConfig);
+        createOllamaBridge(cast<OllamaBaseConfig>(null));
       }).toThrow(ConfigurationError);
 
       // undefined 설정
       expect(() => {
-        createOllamaBridge(undefined as unknown as OllamaBaseConfig);
+        createOllamaBridge(cast<OllamaBaseConfig>(undefined));
       }).toThrow(ConfigurationError);
     });
 
@@ -73,19 +76,19 @@ describe('Configuration Error E2E Tests', () => {
         {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: TEST_CONFIG.TEST_MODEL,
-          temperature: 'invalid' as unknown as number,
+          temperature: cast<number>('invalid'),
         },
         // num_predict가 문자열
         {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: TEST_CONFIG.TEST_MODEL,
-          num_predict: 'invalid' as unknown as number,
+          num_predict: cast<number>('invalid'),
         },
         // 불린 값을 숫자 필드에
         {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: TEST_CONFIG.TEST_MODEL,
-          temperature: true as unknown as number,
+          temperature: cast<number>(true),
         },
       ];
 
@@ -157,11 +160,11 @@ describe('Configuration Error E2E Tests', () => {
         host: TEST_CONFIG.OLLAMA_HOST,
         model: TEST_CONFIG.TEST_MODEL,
         unknownProp: 'should be ignored',
-        temperature: 'invalid' as unknown as number, // 잘못된 타입
+        temperature: cast<number>('invalid'), // 잘못된 타입
       };
 
       expect(() => {
-        createOllamaBridge(configWithUnknownProps as unknown as OllamaBaseConfig);
+        createOllamaBridge(cast<OllamaBaseConfig>(configWithUnknownProps));
       }).toThrow(ConfigurationError);
     });
   });
@@ -332,7 +335,7 @@ describe('Configuration Error E2E Tests', () => {
           host: 'invalid-url',
           model: 'unsupported-model',
           temperature: -1,
-          num_predict: 'invalid' as unknown as number,
+          num_predict: cast<number>('invalid'),
         });
         fail('Expected error to be thrown');
       } catch (error) {

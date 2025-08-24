@@ -125,11 +125,7 @@ function buildHeaders(config: OpenaiLikeConfig): Record<string, string> {
 
 async function setGlobalProxy(url: string): Promise<void> {
   try {
-    type UndiciLike = {
-      ProxyAgent: new (url: string) => unknown;
-      setGlobalDispatcher: (agent: unknown) => void;
-    };
-    const mod = (await import('undici')) as unknown as UndiciLike;
+    const mod = await import('undici');
     const agent = new mod.ProxyAgent(url);
     mod.setGlobalDispatcher(agent);
   } catch {
