@@ -58,12 +58,12 @@ describe('Configuration Error E2E Tests', () => {
 
       // null 설정
       expect(() => {
-        createOllamaBridge(null as any);
+        createOllamaBridge(null as unknown as OllamaBaseConfig);
       }).toThrow(ConfigurationError);
 
       // undefined 설정
       expect(() => {
-        createOllamaBridge(undefined as any);
+        createOllamaBridge(undefined as unknown as OllamaBaseConfig);
       }).toThrow(ConfigurationError);
     });
 
@@ -73,19 +73,19 @@ describe('Configuration Error E2E Tests', () => {
         {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: TEST_CONFIG.TEST_MODEL,
-          temperature: 'invalid' as any,
+          temperature: 'invalid' as unknown as number,
         },
         // num_predict가 문자열
         {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: TEST_CONFIG.TEST_MODEL,
-          num_predict: 'invalid' as any,
+          num_predict: 'invalid' as unknown as number,
         },
         // 불린 값을 숫자 필드에
         {
           host: TEST_CONFIG.OLLAMA_HOST,
           model: TEST_CONFIG.TEST_MODEL,
-          temperature: true as any,
+          temperature: true as unknown as number,
         },
       ];
 
@@ -157,11 +157,11 @@ describe('Configuration Error E2E Tests', () => {
         host: TEST_CONFIG.OLLAMA_HOST,
         model: TEST_CONFIG.TEST_MODEL,
         unknownProp: 'should be ignored',
-        temperature: 'invalid' as any, // 잘못된 타입
+        temperature: 'invalid' as unknown as number, // 잘못된 타입
       };
 
       expect(() => {
-        createOllamaBridge(configWithUnknownProps as any);
+        createOllamaBridge(configWithUnknownProps as unknown as OllamaBaseConfig);
       }).toThrow(ConfigurationError);
     });
   });
@@ -332,7 +332,7 @@ describe('Configuration Error E2E Tests', () => {
           host: 'invalid-url',
           model: 'unsupported-model',
           temperature: -1,
-          num_predict: 'invalid' as any,
+          num_predict: 'invalid' as unknown as number,
         });
         fail('Expected error to be thrown');
       } catch (error) {

@@ -24,7 +24,14 @@
     "@typescript-eslint/no-unsafe-call": "off",
     "@typescript-eslint/no-unsafe-return": "off",
     "@typescript-eslint/no-unsafe-argument": "off",
-    "@typescript-eslint/require-await": "off"
+    "@typescript-eslint/require-await": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "TSAsExpression > TSAnyKeyword",
+        "message": "Do not use 'as any'; use proper typing, generics, or runtime guards."
+      }
+    ]
   },
   "ignorePatterns": ["node_modules", "dist", "**/*.js", "**/*.cjs", "**/*.mjs"]
 }

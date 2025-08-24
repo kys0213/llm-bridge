@@ -10,6 +10,7 @@ import type {
 } from 'llm-bridge-spec';
 
 import { OpenaiLikeConfig } from './types';
+import type { StringContent } from 'llm-bridge-spec';
 
 export class OpenaiLikeBridge implements LlmBridge {
   constructor(private readonly config: OpenaiLikeConfig) {}
@@ -29,7 +30,7 @@ export class OpenaiLikeBridge implements LlmBridge {
       throw new Error(`OpenAI-like request failed: ${res.status} ${res.statusText} ${text}`);
     }
 
-    const json = (await res.json()) as any;
+    const json: unknown = await res.json();
     return mapChatCompletionResponse(json);
   }
 
@@ -40,7 +41,7 @@ export class OpenaiLikeBridge implements LlmBridge {
     const body = buildChatCompletionsRequest(prompt.messages, this.config, {
       ...option,
       stream: true,
-    } as any);
+    });
     const url = new URL('/chat/completions', this.config.baseUrl).toString();
 
     const res = await fetch(url, {
@@ -104,12 +105,18 @@ function buildHeaders(config: OpenaiLikeConfig): Record<string, string> {
   return headers;
 }
 
-function toOpenAiMessage(msg: Message): { role: string; content: string } {
+type OpenAIChatMessage = { role: 'user' | 'assistant' | 'system' | 'tool'; content: string };
+
+function isStringContent(c: MultiModalContent): c is StringContent {
+  return c.contentType === 'text';
+}
+
+function toOpenAiMessage(msg: Message): OpenAIChatMessage {
   const contentText = (msg.content || [])
-    .filter(c => c.contentType === 'text')
-    .map(c => String((c as any).value ?? ''))
+    .filter(isStringContent)
+    .map(c => String(c.value ?? ''))
     .join('\n');
-  return { role: msg.role, content: contentText } as any;
+  return { role: msg.role, content: contentText };
 }
 
 function buildChatCompletionsRequest(
@@ -117,13 +124,13 @@ function buildChatCompletionsRequest(
   config: OpenaiLikeConfig,
   option: InvokeOption & { stream?: boolean }
 ) {
-  const payload: any = {
+  const payload: Record<string, unknown> = {
     model: config.model,
     messages: messages.map(toOpenAiMessage),
     temperature: option.temperature ?? config.temperature,
     top_p: option.topP ?? config.top_p,
     max_tokens: option.maxTokens ?? config.max_tokens,
-    stream: (option as any).stream ?? false,
+    stream: option.stream ?? false,
     response_format: undefined,
   };
   if (config.compatibility?.strict) {
@@ -133,24 +140,28 @@ function buildChatCompletionsRequest(
   return payload;
 }
 
-function mapChatCompletionResponse(json: any): LlmBridgeResponse {
-  const contentText: string = json?.choices?.[0]?.message?.content ?? '';
-  const content: MultiModalContent = { contentType: 'text', value: String(contentText) } as any;
-  const usage: LlmUsage | undefined = json?.usage
+function mapChatCompletionResponse(json: unknown): LlmBridgeResponse {
+  const obj = json as {
+    choices?: { message?: { content?: unknown } }[];
+    usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+  };
+  const contentText = String(obj?.choices?.[0]?.message?.content ?? '');
+  const content: StringContent = { contentType: 'text', value: contentText };
+  const usage: LlmUsage | undefined = obj?.usage
     ? {
-        promptTokens: json.usage.prompt_tokens ?? 0,
-        completionTokens: json.usage.completion_tokens ?? 0,
-        totalTokens: json.usage.total_tokens ?? 0,
+        promptTokens: obj.usage.prompt_tokens ?? 0,
+        completionTokens: obj.usage.completion_tokens ?? 0,
+        totalTokens: obj.usage.total_tokens ?? 0,
       }
     : undefined;
   return { content, usage };
 }
 
-function mapChatCompletionDelta(json: any): LlmBridgeResponse | null {
-  const delta = json?.choices?.[0]?.delta;
-  const piece = delta?.content ?? '';
+function mapChatCompletionDelta(json: unknown): LlmBridgeResponse | null {
+  const obj = json as { choices?: { delta?: { content?: unknown } }[] };
+  const piece = obj?.choices?.[0]?.delta?.content ?? '';
   if (typeof piece !== 'string' || piece.length === 0) return null;
-  const content: MultiModalContent = { contentType: 'text', value: piece } as any;
+  const content: StringContent = { contentType: 'text', value: piece };
   return { content };
 }
 

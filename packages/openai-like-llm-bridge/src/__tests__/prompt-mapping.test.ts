@@ -1,26 +1,30 @@
 import { describe, it, expect } from 'vitest';
 import { __internal } from '../bridge/openai-like-bridge';
+import type { Message } from 'llm-bridge-spec';
+import type { OpenaiLikeConfig } from '../bridge/types';
 
 describe('openai-like mapping', () => {
   it('maps messages to OpenAI format (text only)', () => {
-    const msg = {
+    const msg: Message = {
       role: 'user',
       content: [
         { contentType: 'text', value: 'Hello' },
+        // image is allowed in type, Buffer value OK
         { contentType: 'image', value: Buffer.from('x') },
       ],
-    } as any;
+    };
     const mapped = __internal.toOpenAiMessage(msg);
     expect(mapped).toEqual({ role: 'user', content: 'Hello' });
   });
 
   it('builds chat completions body', () => {
-    const cfg = { baseUrl: 'http://localhost:8000/v1', model: 'gpt-3.5-turbo' } as any;
-    const body = __internal.buildChatCompletionsRequest(
-      [{ role: 'user', content: [{ contentType: 'text', value: 'Hi' }] } as any],
-      cfg,
-      { temperature: 0.2, topP: 0.9, maxTokens: 100 } as any
-    );
+    const cfg: OpenaiLikeConfig = { baseUrl: 'http://localhost:8000/v1', model: 'gpt-3.5-turbo', timeoutMs: 60_000 };
+    const msgs: Message[] = [{ role: 'user', content: [{ contentType: 'text', value: 'Hi' }] }];
+    const body = __internal.buildChatCompletionsRequest(msgs, cfg, {
+      temperature: 0.2,
+      topP: 0.9,
+      maxTokens: 100,
+    });
     expect(body).toMatchObject({
       model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: 'Hi' }],
