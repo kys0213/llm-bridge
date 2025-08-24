@@ -4,12 +4,13 @@ import type {
   LlmBridgePrompt,
   LlmBridgeResponse,
   LlmMetadata,
+  LlmUsage,
   Message,
   MultiModalContent,
 } from 'llm-bridge-spec';
 
-import type { StringContent } from 'llm-bridge-spec';
 import { OpenaiLikeConfig } from './types';
+import type { StringContent } from 'llm-bridge-spec';
 
 export class OpenaiLikeBridge implements LlmBridge {
   private proxyInitialized = false;
@@ -190,7 +191,7 @@ function mapChatCompletionResponse(json: unknown): LlmBridgeResponse {
   };
   const contentText = String(obj?.choices?.[0]?.message?.content ?? '');
   const content: StringContent = { contentType: 'text', value: contentText };
-  const usage = obj?.usage
+  const usage: LlmUsage | undefined = obj?.usage
     ? {
         promptTokens: obj.usage.prompt_tokens ?? 0,
         completionTokens: obj.usage.completion_tokens ?? 0,
@@ -200,12 +201,12 @@ function mapChatCompletionResponse(json: unknown): LlmBridgeResponse {
   return { content, usage };
 }
 
-function mapChatCompletionDelta(json: unknown) {
+function mapChatCompletionDelta(json: unknown): LlmBridgeResponse | null {
   const obj = json as { choices?: { delta?: { content?: unknown } }[] };
   const piece = obj?.choices?.[0]?.delta?.content ?? '';
   if (typeof piece !== 'string' || piece.length === 0) return null;
   const content: StringContent = { contentType: 'text', value: piece };
-  return { content } as LlmBridgeResponse;
+  return { content };
 }
 
 export const __internal = {
