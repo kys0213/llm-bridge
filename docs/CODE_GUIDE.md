@@ -176,6 +176,15 @@ export function manifest(): LlmManifest {
 3. **Test-Driven Development** — write tests first when adding new behavior.
 4. **Type Safety** — favor generics and avoid `any`. If you must accept unknown input, use `unknown` and guard types before use.
 
+### Type Assertions Policy
+
+- Do not use `as any`. Prefer proper types, generics, or runtime guards.
+- Do not use double assertions like `as unknown as SomeType`.
+  - Instead, narrow from `unknown` using type guards, validation (e.g., Zod), or well-typed helper mappers.
+  - When interoperating with external libs, prefer minimal structural types or dedicated adapter types.
+- Avoid non-null assertions (`!`) unless preceded by an explicit runtime check.
+- For schema objects (e.g., Zod): pass the concrete schema value without unsafe casts. If a generic type is required upstream, adjust the upstream typings rather than asserting locally.
+
 ### Type Guards
 
 Use type guards instead of `as any` assertions to ensure type safety. Create specific type guard functions for runtime type checking.
@@ -210,6 +219,22 @@ const cause = (error as any).cause;
 if (cause && cause.code === 'ECONNREFUSED') {
   // This might fail at runtime
 }
+// Avoid this - double assertion bypasses type system
+const schema = something as unknown as ZodObject;
+```
+
+#### ✅ Better: Validation or Adapter Types
+
+```typescript
+// Use Zod (or similar) to validate unknown and infer types
+const Parsed = z.object({ message: z.string() });
+const dataUnknown: unknown = await res.json();
+const data = Parsed.parse(dataUnknown); // safe, typed
+
+// Or define a minimal structural type for interop without asserting any
+type DispatcherLike = { setGlobalDispatcher: (agent: unknown) => void };
+const mod = (await import('undici')) as unknown as DispatcherLike;
+mod.setGlobalDispatcher(agent);
 ```
 
 #### Type Guard Naming Convention
