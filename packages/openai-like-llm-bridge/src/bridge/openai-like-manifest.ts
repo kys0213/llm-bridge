@@ -12,6 +12,11 @@ export const OpenaiLikeConfigSchema = z.object({
   timeoutMs: z.number().int().positive().optional().default(60_000),
   headers: z.record(z.string(), z.string()).optional(),
   organization: z.string().optional(),
+  proxy: z
+    .object({
+      url: z.string().url(),
+    })
+    .optional(),
   compatibility: z
     .object({
       strict: z.boolean().optional(),

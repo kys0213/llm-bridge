@@ -13,17 +13,23 @@ import { OpenaiLikeConfig } from './types';
 import type { StringContent } from 'llm-bridge-spec';
 
 export class OpenaiLikeBridge implements LlmBridge {
+  private proxyInitialized = false;
+
   constructor(private readonly config: OpenaiLikeConfig) {}
 
   async invoke(prompt: LlmBridgePrompt, option: InvokeOption = {}): Promise<LlmBridgeResponse> {
     const body = buildChatCompletionsRequest(prompt.messages, this.config, option);
     const url = new URL('/chat/completions', this.config.baseUrl).toString();
 
+    await this.ensureProxy();
+    const { signal, cancel } = createTimeoutSignal(this.config.timeoutMs ?? 60_000);
     const res = await fetch(url, {
       method: 'POST',
       headers: buildHeaders(this.config),
       body: JSON.stringify(body),
+      signal,
     });
+    cancel();
 
     if (!res.ok) {
       const text = await res.text().catch(() => '');
@@ -44,11 +50,15 @@ export class OpenaiLikeBridge implements LlmBridge {
     });
     const url = new URL('/chat/completions', this.config.baseUrl).toString();
 
+    await this.ensureProxy();
+    const { signal, cancel } = createTimeoutSignal(this.config.timeoutMs ?? 60_000);
     const res = await fetch(url, {
       method: 'POST',
       headers: buildHeaders(this.config),
       body: JSON.stringify({ ...body, stream: true }),
+      signal,
     });
+    cancel();
 
     if (!res.ok || !res.body) {
       const text = await res.text().catch(() => '');
@@ -93,6 +103,14 @@ export class OpenaiLikeBridge implements LlmBridge {
       maxTokens: 4_096,
     };
   }
+
+  private async ensureProxy(): Promise<void> {
+    if (this.proxyInitialized) return;
+    const proxyUrl = this.config.proxy?.url || process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+    if (!proxyUrl) return;
+    await setGlobalProxy(String(proxyUrl));
+    this.proxyInitialized = true;
+  }
 }
 
 function buildHeaders(config: OpenaiLikeConfig): Record<string, string> {
@@ -103,6 +121,29 @@ function buildHeaders(config: OpenaiLikeConfig): Record<string, string> {
   if (config.organization) headers['openai-organization'] = config.organization;
   if (config.headers) Object.assign(headers, config.headers);
   return headers;
+}
+
+async function setGlobalProxy(url: string): Promise<void> {
+  try {
+    type UndiciLike = {
+      ProxyAgent: new (url: string) => unknown;
+      setGlobalDispatcher: (agent: unknown) => void;
+    };
+    const mod = (await import('undici')) as unknown as UndiciLike;
+    const agent = new mod.ProxyAgent(url);
+    mod.setGlobalDispatcher(agent);
+  } catch {
+    // undici not available; ignore proxy
+  }
+}
+
+function createTimeoutSignal(timeoutMs: number) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return {
+    signal: controller.signal,
+    cancel: () => clearTimeout(timer),
+  };
 }
 
 type OpenAIChatMessage = { role: 'user' | 'assistant' | 'system' | 'tool'; content: string };

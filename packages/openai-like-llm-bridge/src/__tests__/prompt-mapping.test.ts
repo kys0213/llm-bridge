@@ -18,7 +18,11 @@ describe('openai-like mapping', () => {
   });
 
   it('builds chat completions body', () => {
-    const cfg: OpenaiLikeConfig = { baseUrl: 'http://localhost:8000/v1', model: 'gpt-3.5-turbo', timeoutMs: 60_000 };
+    const cfg: OpenaiLikeConfig = {
+      baseUrl: 'http://localhost:8000/v1',
+      model: 'gpt-3.5-turbo',
+      timeoutMs: 60_000,
+    };
     const msgs: Message[] = [{ role: 'user', content: [{ contentType: 'text', value: 'Hi' }] }];
     const body = __internal.buildChatCompletionsRequest(msgs, cfg, {
       temperature: 0.2,
