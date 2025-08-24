@@ -4,13 +4,13 @@ import type {
   LlmBridgePrompt,
   LlmBridgeResponse,
   LlmMetadata,
-  LlmUsage,
   Message,
   MultiModalContent,
 } from 'llm-bridge-spec';
 
-import { OpenaiLikeConfig } from './types';
 import type { StringContent } from 'llm-bridge-spec';
+import type OpenAI from 'openai';
+import { OpenaiLikeConfig } from './types';
 
 export class OpenaiLikeBridge implements LlmBridge {
   private proxyInitialized = false;
@@ -156,6 +156,28 @@ function toOpenAiMessage(msg: Message): OpenAIChatMessage {
   return { role: msg.role, content: contentText };
 }
 
+// Type guards referencing OpenAI SDK types (type-only import)
+function isOpenAIChatCompletion(x: unknown): x is OpenAI.Chat.Completions.ChatCompletion {
+  if (typeof x !== 'object' || x === null) return false;
+  const maybe = x as Record<string, unknown>;
+  const choices = maybe['choices'];
+  if (!Array.isArray(choices) || choices.length === 0) return false;
+  const first = choices[0];
+  if (typeof first !== 'object' || first === null) return false;
+  const msg = (first as Record<string, unknown>)['message'];
+  return msg === undefined || typeof msg === 'object';
+}
+
+function isOpenAIChatCompletionChunk(x: unknown): x is OpenAI.Chat.Completions.ChatCompletionChunk {
+  if (typeof x !== 'object' || x === null) return false;
+  const maybe = x as Record<string, unknown>;
+  const choices = maybe['choices'];
+  if (!Array.isArray(choices) || choices.length === 0) return false;
+  const first = choices[0];
+  if (typeof first !== 'object' || first === null) return false;
+  return Object.prototype.hasOwnProperty.call(first, 'delta');
+}
+
 type OpenAIRequestOption = {
   temperature?: number;
   topP?: number;
@@ -185,13 +207,16 @@ function buildChatCompletionsRequest(
 }
 
 function mapChatCompletionResponse(json: unknown): LlmBridgeResponse {
+  const typed = isOpenAIChatCompletion(json) ? json : undefined;
   const obj = json as {
     choices?: { message?: { content?: unknown } }[];
     usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
   };
-  const contentText = String(obj?.choices?.[0]?.message?.content ?? '');
+  const contentText = String(
+    typed?.choices?.[0]?.message?.content ?? obj?.choices?.[0]?.message?.content ?? ''
+  );
   const content: StringContent = { contentType: 'text', value: contentText };
-  const usage: LlmUsage | undefined = obj?.usage
+  const usage = obj?.usage
     ? {
         promptTokens: obj.usage.prompt_tokens ?? 0,
         completionTokens: obj.usage.completion_tokens ?? 0,
@@ -201,12 +226,13 @@ function mapChatCompletionResponse(json: unknown): LlmBridgeResponse {
   return { content, usage };
 }
 
-function mapChatCompletionDelta(json: unknown): LlmBridgeResponse | null {
+function mapChatCompletionDelta(json: unknown) {
+  const typed = isOpenAIChatCompletionChunk(json) ? json : undefined;
   const obj = json as { choices?: { delta?: { content?: unknown } }[] };
-  const piece = obj?.choices?.[0]?.delta?.content ?? '';
+  const piece = typed?.choices?.[0]?.delta?.content ?? obj?.choices?.[0]?.delta?.content ?? '';
   if (typeof piece !== 'string' || piece.length === 0) return null;
   const content: StringContent = { contentType: 'text', value: piece };
-  return { content };
+  return { content } as LlmBridgeResponse;
 }
 
 export const __internal = {
