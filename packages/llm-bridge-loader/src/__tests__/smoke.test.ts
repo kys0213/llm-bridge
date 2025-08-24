@@ -10,4 +10,3 @@ describe('loader smoke', () => {
     expect(typeof loader.scan).toBe('function');
   });
 });
-
