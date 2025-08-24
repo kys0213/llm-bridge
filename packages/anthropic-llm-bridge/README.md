@@ -80,10 +80,12 @@ const bridge = createAnthropicBridge({
 
 // Process large documents
 const response = await bridge.invoke({
-  messages: [{ 
-    role: 'user', 
-    content: [{ type: 'text', text: `Analyze this large codebase: ${largecodebase}` }] 
-  }],
+  messages: [
+    {
+      role: 'user',
+      content: [{ type: 'text', text: `Analyze this large codebase: ${largecodebase}` }],
+    },
+  ],
 });
 ```
 
@@ -143,11 +145,11 @@ const bridge = createAnthropicBridge({
 ### Convenience Factories
 
 ```typescript
-import { 
-  createClaudeOpusBridge, 
-  createClaudeSonnetBridge, 
+import {
+  createClaudeOpusBridge,
+  createClaudeSonnetBridge,
   createClaudeHaikuBridge,
-  createDefaultAnthropicBridge 
+  createDefaultAnthropicBridge,
 } from 'anthropic-llm-bridge';
 
 // Claude Opus 4.1 with defaults (최고 성능)
@@ -179,24 +181,28 @@ const defaultBridge = createDefaultAnthropicBridge({
 ## 📋 Supported Models
 
 ### Claude Opus 4.1
+
 - `claude-opus-4.1` - Highest intelligence and capability
 - Context: 200K tokens
 - Max output: 128K tokens
 - Pricing: $15/$75 per 1M tokens
 
 ### Claude Sonnet 4
+
 - `claude-sonnet-4` - Balanced performance and speed
 - Context: 200K tokens (1M with beta header)
 - Max output: 128K tokens
 - Pricing: $3/$15 per 1M tokens ($6/$22.50 for >200K context)
 
 ### Claude Sonnet 3.7
+
 - `claude-sonnet-3.7` - Previous generation
 - Context: 200K tokens
 - Max output: 8K tokens
 - Pricing: $3/$15 per 1M tokens
 
 ### Claude Haiku 3.5
+
 - `claude-haiku-3.5` - Fast and lightweight
 - Context: 200K tokens
 - Max output: 8K tokens

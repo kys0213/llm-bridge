@@ -36,12 +36,14 @@ packages/anthropic-llm-bridge/
 ## 📝 TODO List
 
 ### Phase 1: Project Setup
+
 - [ ] **TODO 1**: Create package directory structure
 - [ ] **TODO 2**: Setup package.json with dependencies (@anthropic-ai/sdk, llm-bridge-spec)
 - [ ] **TODO 3**: Configure TypeScript build (tsconfig.json, tsconfig.esm.json)
 - [ ] **TODO 4**: Setup testing infrastructure (vitest.config.ts)
 
 ### Phase 2: Model Specifications
+
 - [ ] **TODO 5**: Define AnthropicModelEnum with all Claude models
 - [ ] **TODO 6**: Implement MODEL_METADATA with context windows and pricing
   - Claude Opus 4.1: 200K context, $15/$75 per 1M tokens
@@ -50,11 +52,13 @@ packages/anthropic-llm-bridge/
 - [ ] **TODO 7**: Create model helper functions (getModelMetadata)
 
 ### Phase 3: Configuration System
+
 - [ ] **TODO 8**: Create AnthropicConfigSchema with Zod validation
 - [ ] **TODO 9**: Define configuration interface with API key, model, parameters
 - [ ] **TODO 10**: Add support for custom base URL and headers (1M context beta)
 
 ### Phase 4: Core Bridge Implementation
+
 - [ ] **TODO 11**: Implement AnthropicBridge class structure
 - [ ] **TODO 12**: Implement invoke() method for standard requests
 - [ ] **TODO 13**: Implement invokeStream() method for streaming
@@ -62,22 +66,26 @@ packages/anthropic-llm-bridge/
 - [ ] **TODO 15**: Implement message format conversion (LlmBridgePrompt → Claude format)
 
 ### Phase 5: Advanced Features
+
 - [ ] **TODO 16**: Implement tool calling support
 - [ ] **TODO 17**: Add 1M context window support with beta headers
 - [ ] **TODO 18**: Implement error handling and retry logic
 - [ ] **TODO 19**: Add usage tracking and token counting
 
 ### Phase 6: Factory Functions
+
 - [ ] **TODO 20**: Create main factory function (createAnthropicBridge)
 - [ ] **TODO 21**: Add convenience factories (createClaudeOpusBridge, createClaudeSonnetBridge)
 - [ ] **TODO 22**: Implement default configuration presets
 
 ### Phase 7: Manifest and Export
+
 - [ ] **TODO 23**: Define ANTHROPIC_MANIFEST with capabilities
 - [ ] **TODO 24**: Create index.ts with proper exports
 - [ ] **TODO 25**: Implement manifest() function
 
 ### Phase 8: Testing
+
 - [ ] **TODO 26**: Write unit tests for model metadata
 - [ ] **TODO 27**: Write integration tests for bridge functionality
 - [ ] **TODO 28**: Add streaming tests
@@ -85,11 +93,13 @@ packages/anthropic-llm-bridge/
 - [ ] **TODO 30**: Add error handling tests
 
 ### Phase 9: Documentation
+
 - [ ] **TODO 31**: Create comprehensive README.md
 - [ ] **TODO 32**: Add usage examples and API documentation
 - [ ] **TODO 33**: Document 1M context window usage
 
 ### Phase 10: Quality Assurance
+
 - [ ] **TODO 34**: Run lint and typecheck
 - [ ] **TODO 35**: Ensure test coverage meets requirements
 - [ ] **TODO 36**: Verify build outputs (CommonJS + ESM)
@@ -97,12 +107,14 @@ packages/anthropic-llm-bridge/
 ## 🔧 Technical Requirements
 
 ### Dependencies
+
 - `@anthropic-ai/sdk`: Official Anthropic SDK
 - `llm-bridge-spec`: Core bridge specification
 - `zod`: Schema validation
 - `vitest`: Testing framework
 
 ### Key Features to Implement
+
 1. **Multi-model Support**: Claude Opus 4.1, Sonnet 4, Sonnet 3.7
 2. **Context Window Flexibility**: Standard 200K and extended 1M tokens
 3. **Streaming Support**: Real-time response streaming
@@ -111,6 +123,7 @@ packages/anthropic-llm-bridge/
 6. **Type Safety**: Full TypeScript support with Zod validation
 
 ### API Compatibility
+
 - Must conform to `LlmBridge` interface from `llm-bridge-spec`
 - Support all standard bridge operations (invoke, invokeStream, getMetadata)
 - Maintain consistent error handling patterns
