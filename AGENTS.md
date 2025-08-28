@@ -37,6 +37,7 @@ interface LlmBridgeResponse {
 ### Core Infrastructure
 
 - **`llm-bridge-spec`** - Type definitions, interfaces, and specifications
+- **`embedding-bridge-spec`** - Embedding model specifications and types
 
 ### LLM Bridge Implementations
 
