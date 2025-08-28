@@ -8,6 +8,7 @@ LLM Bridge는 다양한 LLM(Large Language Model) 서비스를 통합하고 관�
 
 - `llm-bridge-loader`: LLM 서비스 로더 및 통합 관리
 - `llm-bridge-spec`: LLM 서비스 스펙 정의 및 타입
+- `embedding-bridge-spec`: Embedding 서비스 스펙 정의 및 타입
 - `llama3-with-ollama-llm-bridge`: Ollama 기반 Llama3 브릿지
 - `gemma3n-with-ollama-llm-bridge`: Ollama 기반 Gemma 3n 브릿지
 - `llama3-with-bedrock-llm-bridge`: Bedrock 기반 Llama3 브릿지
@@ -94,6 +95,10 @@ console.log(response);
 ### llm-bridge-spec
 
 LLM 서비스의 스펙과 타입을 정의하는 패키지입니다.
+
+### embedding-bridge-spec
+
+텍스트 및 멀티모달 입력을 지원하는 Embedding 모델의 스펙과 타입을 정의하는 패키지입니다.
 
 ### Bridge Loader
 
