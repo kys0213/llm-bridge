@@ -244,6 +244,48 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(typescript@5.8.3)(vitest@1.6.1(@types/node@20.17.31))
 
+  packages/openai-embedding-bridge:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.24
+        version: 20.17.31
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.1.0
+        version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+      '@typescript-eslint/parser':
+        specifier: ^7.1.0
+        version: 7.18.0(eslint@8.57.1)(typescript@5.8.3)
+      '@vitest/coverage-v8':
+        specifier: ^1.0.0
+        version: 1.6.1(vitest@1.6.1(@types/node@20.17.31))
+      embedding-bridge-spec:
+        specifier: workspace:*
+        version: link:../embedding-bridge-spec
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.1
+      llm-bridge-spec:
+        specifier: workspace:*
+        version: link:../llm-bridge-spec
+      openai:
+        specifier: ^4.28.0
+        version: 4.96.0(zod@4.0.5)
+      rimraf:
+        specifier: ^5.0.5
+        version: 5.0.10
+      typescript:
+        specifier: ^5.0.0
+        version: 5.8.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.17.31)
+      vitest-mock-extended:
+        specifier: ^3.1.0
+        version: 3.1.0(typescript@5.8.3)(vitest@1.6.1(@types/node@20.17.31))
+      zod:
+        specifier: ^4.0.5
+        version: 4.0.5
+
   packages/openai-like-llm-bridge:
     devDependencies:
       '@types/node':
