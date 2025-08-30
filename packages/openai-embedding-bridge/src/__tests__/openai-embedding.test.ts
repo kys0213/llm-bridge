@@ -62,9 +62,11 @@ describe('OpenAIEmbeddingBridge', () => {
       object: 'list',
       usage: { prompt_tokens: 0, total_tokens: 0 },
     };
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     mockClient.embeddings.create.mockResolvedValue(mockResponse);
 
     await bridge.embed({ input: 'hello' });
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockClient.embeddings.create).toHaveBeenCalledWith({
       model: 'text-embedding-3-small',
       input: 'hello',
