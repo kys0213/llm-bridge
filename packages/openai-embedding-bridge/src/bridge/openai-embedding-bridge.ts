@@ -36,7 +36,11 @@ export class OpenAIEmbeddingBridge implements EmbeddingBridge {
 
   async embed(request: EmbeddingRequest): Promise<EmbeddingResponse> {
     const input = this.normalizeInput(request.input);
-    const res = await this.client.embeddings.create({ model: this.model, input });
+    const res = await this.client.embeddings.create({
+      model: this.model,
+      input,
+      dimensions: this.dimension,
+    });
     const vectors = res.data.map(d => d.embedding);
     const embeddings = Array.isArray(request.input) ? vectors : vectors[0];
     return {

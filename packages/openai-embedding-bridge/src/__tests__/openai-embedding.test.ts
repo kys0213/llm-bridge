@@ -50,6 +50,28 @@ describe('OpenAIEmbeddingBridge', () => {
     expect(res.usage).toEqual({ promptTokens: 10 });
   });
 
+  it('should forward configured dimension to OpenAI API', async () => {
+    const mockClient = mockDeep<OpenAI>();
+    const bridge = new OpenAIEmbeddingBridge(mockClient, {
+      ...config,
+      dimension: 256,
+    });
+    const mockResponse: CreateEmbeddingResponse = {
+      data: [{ embedding: new Array(256).fill(0), index: 0, object: 'embedding' }],
+      model: 'text-embedding-3-small',
+      object: 'list',
+      usage: { prompt_tokens: 0, total_tokens: 0 },
+    };
+    mockClient.embeddings.create.mockResolvedValue(mockResponse);
+
+    await bridge.embed({ input: 'hello' });
+    expect(mockClient.embeddings.create).toHaveBeenCalledWith({
+      model: 'text-embedding-3-small',
+      input: 'hello',
+      dimensions: 256,
+    });
+  });
+
   it('factory should validate config', () => {
     expect(() => createOpenAIEmbeddingBridge({ apiKey: 'key' })).not.toThrow();
   });
