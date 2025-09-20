@@ -1,7 +1,7 @@
 import { LlmModelInfo, LlmModelPricing } from 'llm-bridge-spec';
 
 /**
- * Google Gemini 모델 enum
+ * Google Gemini에서 지원하는 모델 ID.
  */
 export enum GoogleModelEnum {
   GEMINI_1_5_FLASH = 'gemini-1.5-flash',
@@ -12,32 +12,38 @@ export enum GoogleModelEnum {
 export interface ModelMetadata {
   family: string;
   version: string;
+  description: string;
   contextWindowTokens: number;
-  maxTokens: number;
+  maxOutputTokens: number;
   pricing: LlmModelPricing;
 }
+
+const MILLION = 1_000_000;
 
 export const MODEL_METADATA: Record<GoogleModelEnum, ModelMetadata> = {
   [GoogleModelEnum.GEMINI_1_5_FLASH]: {
     family: 'Gemini 1.5 Flash',
     version: '1.5',
-    contextWindowTokens: 1000000,
-    maxTokens: 8192,
-    pricing: { unit: 1000000, currency: 'USD', prompt: 0, completion: 0 },
+    description: '대규모 컨텍스트를 저비용으로 처리하는 범용 고속 모델',
+    contextWindowTokens: 1_000_000,
+    maxOutputTokens: 8_192,
+    pricing: { unit: MILLION, currency: 'USD', prompt: 0.35, completion: 1.05 },
   },
   [GoogleModelEnum.GEMINI_1_5_PRO]: {
     family: 'Gemini 1.5 Pro',
     version: '1.5',
-    contextWindowTokens: 1000000,
-    maxTokens: 8192,
-    pricing: { unit: 1000000, currency: 'USD', prompt: 0, completion: 0 },
+    description: '정확도와 추론 능력이 강화된 풀스펙 멀티모달 모델',
+    contextWindowTokens: 1_000_000,
+    maxOutputTokens: 8_192,
+    pricing: { unit: MILLION, currency: 'USD', prompt: 7.0, completion: 21.0 },
   },
   [GoogleModelEnum.GEMINI_1_0_PRO]: {
     family: 'Gemini 1.0 Pro',
     version: '1.0',
-    contextWindowTokens: 32000,
-    maxTokens: 8192,
-    pricing: { unit: 1000000, currency: 'USD', prompt: 0, completion: 0 },
+    description: '1.0 세대의 안정적인 프로덕션용 텍스트·이미지 모델',
+    contextWindowTokens: 32_000,
+    maxOutputTokens: 8_192,
+    pricing: { unit: MILLION, currency: 'USD', prompt: 3.5, completion: 10.5 },
   },
 };
 
