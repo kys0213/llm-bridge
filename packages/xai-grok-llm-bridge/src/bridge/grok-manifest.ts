@@ -3,37 +3,37 @@ import { z } from 'zod';
 
 const WebSourceSchema = z
   .object({
-  type: z.literal('web'),
-  country: z.string().length(2).optional(),
-  excludedWebsites: z.array(z.string()).max(5).optional(),
-  allowedWebsites: z.array(z.string()).max(5).optional(),
-  safeSearch: z.boolean().optional(),
+    type: z.literal('web'),
+    country: z.string().length(2).optional(),
+    excludedWebsites: z.array(z.string()).max(5).optional(),
+    allowedWebsites: z.array(z.string()).max(5).optional(),
+    safeSearch: z.boolean().optional(),
   })
   .passthrough();
 
 const XSourceSchema = z
   .object({
-  type: z.literal('x'),
-  excludedXHandles: z.array(z.string()).optional(),
-  includedXHandles: z.array(z.string()).optional(),
-  postFavoriteCount: z.number().int().nonnegative().optional(),
-  postViewCount: z.number().int().nonnegative().optional(),
+    type: z.literal('x'),
+    excludedXHandles: z.array(z.string()).optional(),
+    includedXHandles: z.array(z.string()).optional(),
+    postFavoriteCount: z.number().int().nonnegative().optional(),
+    postViewCount: z.number().int().nonnegative().optional(),
   })
   .passthrough();
 
 const NewsSourceSchema = z
   .object({
-  type: z.literal('news'),
-  country: z.string().length(2).optional(),
-  excludedWebsites: z.array(z.string()).max(5).optional(),
-  safeSearch: z.boolean().optional(),
+    type: z.literal('news'),
+    country: z.string().length(2).optional(),
+    excludedWebsites: z.array(z.string()).max(5).optional(),
+    safeSearch: z.boolean().optional(),
   })
   .passthrough();
 
 const RssSourceSchema = z
   .object({
-  type: z.literal('rss'),
-  links: z.array(z.string().url()).min(1).max(1),
+    type: z.literal('rss'),
+    links: z.array(z.string().url()).min(1).max(1),
   })
   .passthrough();
 

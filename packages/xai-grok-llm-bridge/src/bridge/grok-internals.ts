@@ -123,7 +123,10 @@ export function mapChatCompletionDelta(json: unknown): LlmBridgeResponse[] {
   if (typeof choice.delta?.content === 'string' && choice.delta.content.length > 0) {
     textPieces.push(choice.delta.content);
   }
-  if (typeof choice.delta?.reasoning_content === 'string' && choice.delta.reasoning_content.length > 0) {
+  if (
+    typeof choice.delta?.reasoning_content === 'string' &&
+    choice.delta.reasoning_content.length > 0
+  ) {
     textPieces.push(choice.delta.reasoning_content);
   }
   if (textPieces.length > 0) {
@@ -175,7 +178,9 @@ function parseToolArguments(raw: string | undefined): Record<string, unknown> {
   }
 }
 
-export function mapResponseFormat(format: GrokConfig['responseFormat']): GrokResponseFormat | undefined {
+export function mapResponseFormat(
+  format: GrokConfig['responseFormat']
+): GrokResponseFormat | undefined {
   if (!format) return undefined;
   if (format.type === 'text') return { type: 'text' };
   if (format.type === 'json_object') return { type: 'json_object' };
@@ -189,7 +194,9 @@ export function mapResponseFormat(format: GrokConfig['responseFormat']): GrokRes
   };
 }
 
-export function mapSearchParameters(search?: GrokSearchConfig): Record<string, unknown> | undefined {
+export function mapSearchParameters(
+  search?: GrokSearchConfig
+): Record<string, unknown> | undefined {
   if (!search) return undefined;
   const mapped: Record<string, unknown> = {};
   if (search.mode) mapped.mode = search.mode;
@@ -231,7 +238,11 @@ function resolveToolChoice(
   tools: InvokeOption['tools']
 ): GrokChatCompletionRequest['tool_choice'] | undefined {
   if (config.toolChoice) {
-    if (config.toolChoice === 'auto' || config.toolChoice === 'none' || config.toolChoice === 'required') {
+    if (
+      config.toolChoice === 'auto' ||
+      config.toolChoice === 'none' ||
+      config.toolChoice === 'required'
+    ) {
       return config.toolChoice;
     }
     return { type: 'function', function: { name: config.toolChoice.toolName } };
