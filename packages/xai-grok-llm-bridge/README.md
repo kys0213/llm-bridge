@@ -20,9 +20,7 @@ const bridge = new GrokBridgePkg.bridge({
 });
 
 const response = await bridge.invoke({
-  messages: [
-    { role: 'user', content: [{ contentType: 'text', value: '안녕?' }] },
-  ],
+  messages: [{ role: 'user', content: [{ contentType: 'text', value: '안녕?' }] }],
 });
 
 console.log(response.content);
