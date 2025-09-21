@@ -1,6 +1,6 @@
 {
   "name": "xai-grok-llm-bridge",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "xAI Grok chat completions bridge implementation for the LLM Bridge ecosystem",
   "main": "./dist/index.js",
   "module": "./esm/index.js",
