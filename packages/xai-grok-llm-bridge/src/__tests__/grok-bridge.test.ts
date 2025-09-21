@@ -162,6 +162,37 @@ describe('Grok bridge mappings', () => {
     });
   });
 
+  it('surfaces tool call deltas from streaming chunks', () => {
+    const deltas = mapChatCompletionDelta({
+      choices: [
+        {
+          delta: {
+            tool_calls: [
+              {
+                id: 'call-1',
+                type: 'function',
+                function: { name: 'lookup', arguments: '{"query":"weather"}' },
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    expect(deltas).toEqual([
+      {
+        content: { contentType: 'text', value: '' },
+        toolCalls: [
+          {
+            toolCallId: 'call-1',
+            name: 'lookup',
+            arguments: { query: 'weather' },
+          },
+        ],
+      },
+    ]);
+  });
+
   it('parses SSE event payloads', () => {
     const event = parseSseEvent('event: message\ndata: {"foo":"bar"}');
     expect(event).toEqual({ event: 'message', data: '{"foo":"bar"}' });

@@ -130,6 +130,16 @@ export function mapChatCompletionDelta(json: unknown): LlmBridgeResponse[] {
     deltas.push({ content: { contentType: 'text', value: textPieces.join('\n\n') } });
   }
 
+  const toolCallDeltas = (choice.delta?.tool_calls ?? [])
+    .filter((tool): tool is GrokToolCall => Boolean(tool && tool.id && tool.function))
+    .map(tool => mapToolCall(tool));
+  if (toolCallDeltas.length > 0) {
+    deltas.push({
+      content: { contentType: 'text', value: '' },
+      toolCalls: toolCallDeltas,
+    });
+  }
+
   if (obj.usage) {
     deltas.push({
       content: { contentType: 'text', value: '' },
