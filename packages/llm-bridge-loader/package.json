@@ -20,8 +20,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "pnpm build:clean && pnpm build:esm && pnpm build:cjs",
-    "build:clean": "rm -rf dist",
-    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:clean": "rimraf dist && rimraf esm",
+    "build:esm": "tsc -p tsconfig.esm.json && node ../../scripts/postbuild-esm.cjs",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "dev": "tsc -p tsconfig.json",
     "test": "vitest run",

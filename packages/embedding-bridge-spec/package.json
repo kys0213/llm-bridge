@@ -2,15 +2,14 @@
   "name": "embedding-bridge-spec",
   "version": "0.1.1",
   "private": false,
-  "type": "module",
   "main": "./dist/index.js",
   "module": "./esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/index.js",
       "import": "./esm/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
@@ -20,15 +19,15 @@
   ],
   "scripts": {
     "build": "pnpm build:clean && pnpm build:types && pnpm build:esm && pnpm build:cjs",
-    "build:clean": "rimraf dist",
+    "build:clean": "rimraf dist && rimraf esm",
     "build:types": "tsc -p tsconfig.types.json",
-    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:esm": "tsc -p tsconfig.esm.json && node ../../scripts/postbuild-esm.cjs",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist && rimraf esm",
     "prepublishOnly": "pnpm build"
   },
   "devDependencies": {

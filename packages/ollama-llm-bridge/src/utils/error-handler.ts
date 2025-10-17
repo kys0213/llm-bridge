@@ -11,7 +11,7 @@ import {
   TimeoutError,
 } from 'llm-bridge-spec';
 import { ZodError } from 'zod';
-import { ALL_SUPPORTED_MODELS } from '../models';
+import { ALL_SUPPORTED_MODELS } from '../models/index';
 
 // Type guards for error handling
 function hasCause(error: unknown): error is { cause: unknown } {

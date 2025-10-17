@@ -7,7 +7,7 @@ import {
   ModelNotSupportedError,
 } from 'llm-bridge-spec';
 import { ChatResponse, Ollama } from 'ollama';
-import { AbstractOllamaModel, ALL_SUPPORTED_MODELS, createModelFromId } from '../models';
+import { AbstractOllamaModel, ALL_SUPPORTED_MODELS, createModelFromId } from '../models/index';
 import { OllamaBaseConfig } from '../types/config';
 import { handleOllamaError } from '../utils/error-handler';
 

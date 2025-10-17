@@ -5,8 +5,11 @@
     "rootDir": "./src",
     "module": "ESNext",
     "target": "ES2020",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    "emitDeclarationOnly": false,
+    "composite": false,
+    "incremental": false
   }
 }
