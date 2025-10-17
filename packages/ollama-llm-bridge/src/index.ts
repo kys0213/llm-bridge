@@ -27,7 +27,7 @@ export {
   GptOssConfig,
   ALL_SUPPORTED_MODELS,
   createModelFromId,
-} from './models';
+} from './models/index';
 
 // 에러 핸들러
 export { handleOllamaError, handleFactoryError, validateModel } from './utils/error-handler';

@@ -3,6 +3,9 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "declaration": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false
   }
 }

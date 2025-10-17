@@ -6,7 +6,7 @@
   "module": "./esm/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "pnpm clean && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
+    "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
     "dev": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:ci": "vitest run --exclude='src/**/*.e2e.test.ts'",
@@ -15,7 +15,9 @@
     "test:e2e": "vitest run src/**/*.e2e.test.ts",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "clean": "rm -rf dist && rm -rf esm"
+    "clean": "rimraf dist && rimraf esm",
+    "build:cjs": "tsc -p tsconfig.json",
+    "build:esm": "tsc -p tsconfig.esm.json && node ../../scripts/postbuild-esm.cjs"
   },
   "exports": {
     ".": {

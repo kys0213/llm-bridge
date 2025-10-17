@@ -105,6 +105,26 @@ LLM 서비스의 스펙과 타입을 정의하는 패키지입니다.
 
 LLM 브릿지를 로드하는 인터페이스 정의는 `docs/BRIDGE_LOADER_SPEC.md` 문서를 참고하세요.
 
+### 모듈 사용법
+
+CommonJS와 ES Module 환경 모두에서 패키지를 그대로 사용할 수 있도록 듀얼 번들을 제공합니다.
+
+```javascript
+// CommonJS
+const { DependencyBridgeLoader } = require('llm-bridge-loader');
+const { default: OpenAIBridge } = require('openai-llm-bridge');
+```
+
+```javascript
+// ES Module
+import { DependencyBridgeLoader } from 'llm-bridge-loader';
+import OpenAIBridge from 'openai-llm-bridge';
+```
+
+각 패키지의 `esm/` 디렉터리에는 `package.json`이 포함되어 Node.js가 ES Module로 정확히 인식합니다. `pnpm --filter <패키지> build` 스크립트는 `dist/`(CJS)와 `esm/`(ESM)을 동시에 갱신하며, CI에서도 빌드 후 일반 테스트(`pnpm test:ci`)를 바로 수행하도록 구성했습니다.
+
+압축 아카이브 형태의 브리지를 로드하려면 `ArchiveBridgeLoader`를 사용할 수 있습니다.
+
 ## 라이선스
 
 MIT

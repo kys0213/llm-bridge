@@ -4,8 +4,10 @@
     "outDir": "./esm",
     "module": "ESNext",
     "moduleResolution": "node",
-    "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": false
+    "declaration": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "composite": false,
+    "incremental": false
   }
 }
